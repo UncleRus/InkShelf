@@ -59,7 +59,12 @@ public final class PagePlan {
      * @param itemH     высота строки-элемента, px (номинальная, по разметке)
      * @param dividerH  высота разделителя между строками, px (номер 4 в
      *                  {@code BACKLOG.md}); строки занимают {@code sum + (n-1)*divider},
-     *                  поэтому бюджет берётся как {@code viewport + dividerH}
+     *                  поэтому бюджет берётся как {@code viewport + dividerH +
+     *                  LAST_ROW_SLACK}. Допуск в пиксель нужен потому, что
+     *                  {@code ListView} обрезает последнюю строку страницы на
+     *                  величину округления: без него деление вниз теряло целую
+     *                  строку на каждой странице (те же грабли, что у плоских
+     *                  «Жанров»/«Серий»: {@link ListMetrics#perPage})
      */
     public static PagePlan grouped(int total, Sections sections, int viewport,
                                    int headerH, int itemH, int dividerH) {
@@ -71,7 +76,8 @@ public final class PagePlan {
         }
         if (sections == null || sections.count() == 0) {
             int per = itemH > 0 && viewport > 0
-                    ? Math.max(1, (viewport + dividerH) / (itemH + dividerH))
+                    ? Math.max(1, (viewport + dividerH + ListMetrics.LAST_ROW_SLACK)
+                            / (itemH + dividerH))
                     : ListMetrics.DEFAULT;
             return flat(total, per);
         }
@@ -82,10 +88,11 @@ public final class PagePlan {
             headerH = 0;
         }
         // Строка «стоит» свою высоту плюс разделитель; лишний разделитель в конце
-        // компенсируется добавкой dividerH к бюджету.
+        // и пиксельная погрешность последней строки компенсируются добавкой
+        // (dividerH + LAST_ROW_SLACK) к бюджету — см. ListMetrics#perPage.
         int costH = headerH + dividerH;
         int costI = itemH + dividerH;
-        int budget = viewport + dividerH;
+        int budget = viewport + dividerH + ListMetrics.LAST_ROW_SLACK;
         IntBag pages = new IntBag(total / itemH + 2);
         int i = 0;
         while (i < total) {

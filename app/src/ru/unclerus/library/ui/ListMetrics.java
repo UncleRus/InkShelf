@@ -29,6 +29,13 @@ public final class ListMetrics {
 
     /** Запасное значение, если измерить не удалось. */
     public static final int DEFAULT = 12;
+
+    /**
+     * Допуск на последнюю строку страницы, px. {@code ListView} обрезает её
+     * снизу на величину округления (не больше {@code divider}), тексту это не
+     * вредит; без допуска деление вниз теряет целую строку. См. {@link #perPage}.
+     */
+    public static final int LAST_ROW_SLACK = 1;
     private static final int MIN = 1;
     private static final int MAX = 100;
 
@@ -46,8 +53,15 @@ public final class ListMetrics {
      * То же, но с учётом высоты разделителя {@code dividerPx} между строками
      * (номер 4 в {@code BACKLOG.md}): {@code n} строк занимают
      * {@code n*row + (n-1)*divider}, поэтому
-     * {@code n = (h + divider) / (row + divider)}. Без этого список вылезал за
-     * область на {@code (n-1)*divider} пикселей.
+     * {@code n = (h + divider + LAST_ROW_SLACK) / (row + divider)}.
+     *
+     * <p>{@code LAST_ROW_SLACK} — пиксельная погрешность последней строки:
+     * {@code ListView} обрезает её ровно на {@code h - n*(row+divider) + divider}
+     * пикселей внизу строки (в её нижнем padding'е, текст не затрагивается).
+     * Без этого резерва округление вниз теряло целую строку на каждой странице:
+     * при области 1174px, строке 105px и разделителе 2px влезало 10 строк
+     * (1068px), а 11-й не хватало одного пикселя (1175px) — внизу висели 106px
+     * пустоты (замер на устройстве 2026-11-02, «Жанры»).
      */
     public static int perPage(Context ctx, int listHeightPx, int rowLayoutId, int dividerPx) {
         if (listHeightPx <= 0) {
@@ -60,7 +74,7 @@ public final class ListMetrics {
         if (dividerPx < 0) {
             dividerPx = 0;
         }
-        int n = (listHeightPx + dividerPx) / (row + dividerPx);
+        int n = (listHeightPx + dividerPx + LAST_ROW_SLACK) / (row + dividerPx);
         if (n < MIN) {
             n = MIN;
         }
