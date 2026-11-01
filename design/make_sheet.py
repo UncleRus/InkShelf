@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Собирает design/sheet.html — лист макетов с подписями (оба языка) + design/index.html.
-Подписи берутся из TITLES; порядок — по имени файла."""
+"""Собирает design/sheet_ru.html и design/sheet_en.html — листы макетов с подписями
+по языкам, плюс design/index.html. Подписи берутся из TITLES; порядок — по имени файла.
+PNG берутся из design/screens/<lang>/ (их пишет design/render.sh)."""
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
