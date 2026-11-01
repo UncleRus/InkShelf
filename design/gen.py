@@ -1281,7 +1281,7 @@ def s14_diagnostics():
             blk('info', tr('blk_device')) +
             kv(tr('k_model'), 'ONYX BOOX RAPHAEL2') +
             kv(tr('k_android'), '11 (API 30)') +
-            kv(tr('k_app_version'), '0.1.0 (1)') + '</div>' +
+            kv(tr('k_app_version'), '0.1.1 (2)') + '</div>' +
             blk('database', tr('blk_index')) +
             kv(tr('k_total_books'), num(677)) +
             kv(tr('k_agr'), '%s / %s / %s' % (num(312), num(69), num(96))) +
@@ -1309,7 +1309,7 @@ def s15_about():
             '<div style="%s;font-weight:700">%s</div>' % (t('xl'), esc(tr('app_name'))) +
             '<div style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(6), esc(tr('app_tagline'))) +
-            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), '0.1.0'))) +
+            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), '0.1.1'))) +
             '<div class="msg" style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(24), esc(tr('about_text'))) +
             '<div class="msg" style="%s;color:#777;margin-top:%dpx">%s</div>'
