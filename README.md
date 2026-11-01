@@ -73,7 +73,9 @@ adb install -r Library.apk
 ## Макеты и строки
 `design/gen.py` — единый источник строк RU/EN (`res/values/strings.xml`,
 `res/values-en/strings.xml`) и иконок `drawable/ic_*.xml`.
-`design/render.sh` — растеризация макетов (Chromium headless) в `design/screens/`.
+`design/render.sh` — растеризация макетов (Chromium headless) в `design/screens/<lang>/`
+(`ru/`, `en/`). Валидны только эти подкаталоги; PNG, лежащие прямо в `design/screens/`,
+устарели — скрипт их не обновляет.
 
 ```bash
 python3 design/gen.py
