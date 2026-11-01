@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S7 «О программе» (макет 15): знак, название, девиз, версия, назначение,
+  строка о том, чем написан, и идентификатор пакета. Колонка сверху вниз,
+  всё по центру; отбивки повторяют макет (сверху 40dp, далее 12/18/12/36/24/36dp).
+  NFR-1: у текста только wrap_content, перенос длинной строки не обрезается.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/tab_min_h"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageButton
+            android:id="@+id/about_back"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/action_up" />
+
+        <TextView
+            android:id="@+id/about_title"
+            style="@style/Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/space_s"
+            android:text="@string/title_about" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/about_pad_top"
+            android:paddingLeft="@dimen/space_xl"
+            android:paddingRight="@dimen/space_xl"
+            android:paddingBottom="@dimen/space_xl">
+
+            <ImageView
+                android:id="@+id/about_icon"
+                android:layout_width="@dimen/empty_icon"
+                android:layout_height="@dimen/empty_icon"
+                android:src="@drawable/ic_books"
+                android:tint="@color/ink"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/about_name"
+                style="@style/Text.Xl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_name"
+                android:text="@string/app_name" />
+
+            <TextView
+                android:id="@+id/about_tagline"
+                style="@style/Text.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_tagline"
+                android:textColor="@color/ink_secondary"
+                android:text="@string/app_tagline" />
+
+            <TextView
+                android:id="@+id/about_version"
+                style="@style/Text.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_version"
+                android:textColor="@color/ink_faint" />
+
+            <TextView
+                android:id="@+id/about_text"
+                style="@style/Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_text"
+                android:gravity="center"
+                android:textColor="@color/ink_secondary"
+                android:text="@string/about_text" />
+
+            <TextView
+                android:id="@+id/about_made"
+                style="@style/Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_made"
+                android:gravity="center"
+                android:textColor="@color/ink_faint"
+                android:text="@string/about_made" />
+
+            <TextView
+                android:id="@+id/about_package"
+                style="@style/Text.Meta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/about_gap_package" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

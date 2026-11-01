@@ -60,6 +60,12 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Крупное название (S7 «О программе», макет 15). -->
+    <style name="Text.Xl" parent="Text">
+        <item name="android:textSize">@dimen/text_xl</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Text.Body" parent="Text">
         <item name="android:textSize">@dimen/text_body</item>
     </style>

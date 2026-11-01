@@ -60,6 +60,17 @@
     <!-- Пустые состояния -->
     <dimen name="empty_icon">72dp</dimen>
 
+    <!-- S7 «О программе» (макет 15): отбивки колонки.
+         В макете общий gap 12dp плюс собственный margin-top у блока,
+         отсюда нестандартные 18dp и 36dp. -->
+    <dimen name="about_pad_top">40dp</dimen>
+    <dimen name="about_gap_name">12dp</dimen>
+    <dimen name="about_gap_tagline">18dp</dimen>
+    <dimen name="about_gap_version">12dp</dimen>
+    <dimen name="about_gap_text">36dp</dimen>
+    <dimen name="about_gap_made">24dp</dimen>
+    <dimen name="about_gap_package">36dp</dimen>
+
     <!-- Типографика (sp) -->
     <dimen name="text_xl">22sp</dimen>
     <dimen name="text_title">18sp</dimen>
