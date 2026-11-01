@@ -95,6 +95,9 @@ public final class Indexer {
                         });
                         holder[0] = st;
                         RootRepo.setVolumeState(d, root.id, st.volumeState);
+                        if (st.permissionState != null) {
+                            RootRepo.setPermissionState(d, root.id, st.permissionState);
+                        }
                         if (st.ok) {
                             RootRepo.markScanned(d, root.id, System.currentTimeMillis());
                             RootRepo.setError(d, root.id, null);

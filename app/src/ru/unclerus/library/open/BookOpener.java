@@ -8,6 +8,7 @@ import java.io.File;
 
 import ru.unclerus.library.Logger;
 import ru.unclerus.library.file.LibraryFileProvider;
+import ru.unclerus.library.util.BookFiles;
 
 /**
  * Запуск книги в выбранной читалке (FR-5).
@@ -40,9 +41,15 @@ public final class BookOpener {
 
     /** Интент открытия книги в конкретной читалке. */
     public static Intent intent(String path, String mime, String pkg) {
-        Uri uri = ReaderRegistry.KREADER.equals(pkg)
-                ? Uri.fromFile(new File(path))
-                : LibraryFileProvider.uriFor(path);
+        Uri uri;
+        if (BookFiles.isSaf(path)) {
+            // SAF-документ: файлового пути нет — отдаём URI как есть.
+            uri = Uri.parse(path);
+        } else if (ReaderRegistry.KREADER.equals(pkg)) {
+            uri = Uri.fromFile(new File(path));
+        } else {
+            uri = LibraryFileProvider.uriFor(path);
+        }
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(uri, mime);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

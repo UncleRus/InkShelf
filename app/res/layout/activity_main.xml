@@ -123,6 +123,27 @@
         android:layout_height="@dimen/divider_h"
         android:background="@color/divider" />
 
+    <!-- Баннер состояния ST5/ST9 над списком: «часть книг недоступна» (→ S9)
+         или «нет доступа к файлам» (→ D2). Кликабелен, с шевроном вправо. -->
+    <TextView
+        android:id="@+id/banner"
+        style="@style/Text.Body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/banner_bg"
+        android:textColor="@color/banner_ink"
+        android:drawableStart="@drawable/ic_alert"
+        android:drawableEnd="@drawable/ic_chevron"
+        android:drawablePadding="@dimen/space_s"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_s"
+        android:paddingBottom="@dimen/space_s"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone" />
+
     <!-- Область списка: либо список, либо пустое состояние из БД.
          Фон — точечный дизеринг: виден только под последней строкой (строки
          непрозрачно белые), заполняет «пустоту» внизу списка. -->

@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 
 import ru.unclerus.library.App;
 import ru.unclerus.library.Logger;
+import ru.unclerus.library.util.BookFiles;
 import ru.unclerus.library.util.Prefs;
 
 /**
@@ -70,7 +71,7 @@ public final class ThumbCache {
      * сразу; иначе загрузка уходит в фоновый поток и {@code onLoaded} дёрнется по
      * готовности. Пока миниатюры нет, вызывающий рисует плейсхолдер.
      */
-    public static void request(Context ctx, long bookId, File file, String format,
+    public static void request(Context ctx, long bookId, String path, String format,
                                String coverEntry, Runnable onLoaded) {
         if (bookId <= 0) {
             return;
@@ -91,7 +92,7 @@ public final class ThumbCache {
             sInflight.add(Long.valueOf(bookId));
         }
         final Context app = ctx.getApplicationContext();
-        final File f = file;
+        final String p = path;
         final String fmt = format;
         final String entry = coverEntry;
         final Runnable done = onLoaded;
@@ -100,7 +101,7 @@ public final class ThumbCache {
             public void run() {
                 Bitmap bmp = null;
                 try {
-                    bmp = load(app, bookId, f, fmt, entry);
+                    bmp = load(app, bookId, p, fmt, entry);
                 } catch (Throwable t) {
                     Logger.e("Cover", "не удалось загрузить обложку id=" + bookId, t);
                 }
@@ -178,7 +179,7 @@ public final class ThumbCache {
     // ------------------------------------------------------------------
 
     /** Синхронная загрузка: память → диск → извлечение из книги. */
-    private static Bitmap load(Context ctx, long bookId, File file, String format, String entry) {
+    private static Bitmap load(Context ctx, long bookId, String path, String format, String entry) {
         File cached = thumbFile(ctx, bookId);
         Bitmap bmp = null;
         if (cached.isFile()) {
@@ -189,10 +190,19 @@ public final class ThumbCache {
             }
             cached.delete(); // битый кэш — перечитаем из книги
         }
-        if (file == null || !file.isFile()) {
+        if (path == null) {
             return null;
         }
-        byte[] raw = CoverStore.raw(file, format, entry);
+        File file = BookFiles.open(ctx, path);
+        if (file == null) {
+            return null;
+        }
+        byte[] raw;
+        try {
+            raw = CoverStore.raw(file, format, entry);
+        } finally {
+            BookFiles.release(path, file);
+        }
         if (raw == null || raw.length == 0) {
             return null;
         }

@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.Date;
 
 import ru.unclerus.library.App;
@@ -32,6 +31,7 @@ import ru.unclerus.library.db.Cleanup;
 import ru.unclerus.library.db.Schema;
 import ru.unclerus.library.fmt.BookFormat;
 import ru.unclerus.library.open.BookActions;
+import ru.unclerus.library.util.BookFiles;
 import ru.unclerus.library.util.Dialogs;
 import ru.unclerus.library.util.Lang;
 import ru.unclerus.library.util.Text;
@@ -356,7 +356,7 @@ public final class BookActivity extends ThemedActivity {
         }
         applyCover(null);
         if (!ThumbCache.hasNoCover(mBookId)) {
-            ThumbCache.request(this, mBookId, new File(mPath), mFormat, mCoverEntry, mCoverLoaded);
+            ThumbCache.request(this, mBookId, mPath, mFormat, mCoverEntry, mCoverLoaded);
         }
     }
 
@@ -390,7 +390,7 @@ public final class BookActivity extends ThemedActivity {
         // Если обложка ещё не загрузилась — попробуем догрузить к моменту показа.
         if (mShowCovers && !mMissing && !Text.isBlank(mCoverEntry)
                 && ThumbCache.peek(mBookId) == null) {
-            ThumbCache.request(this, mBookId, new File(mPath), mFormat, mCoverEntry, mCoverLoaded);
+            ThumbCache.request(this, mBookId, mPath, mFormat, mCoverEntry, mCoverLoaded);
         }
         mOverlay.setVisibility(View.VISIBLE);
     }
@@ -462,7 +462,7 @@ public final class BookActivity extends ThemedActivity {
         } else {
             authorsView.setText(authors);
         }
-        line(body, R.id.del_file, R.string.dlg_delete_file_label, new File(mPath).getName());
+        line(body, R.id.del_file, R.string.dlg_delete_file_label, BookFiles.name(mPath));
         line(body, R.id.del_path, R.string.dlg_delete_path_label, mPath);
         line(body, R.id.del_size, R.string.dlg_delete_size_label,
                 BookRowAdapter.human(mFileSize));
@@ -508,8 +508,7 @@ public final class BookActivity extends ThemedActivity {
 
     /** «Удалить файл»: сначала файл, затем запись. */
     private void deleteFileAndRecord() {
-        File f = new File(mPath);
-        boolean ok = !f.exists() || f.delete();
+        boolean ok = BookFiles.delete(this, mPath);
         if (!ok) {
             Logger.w("Book", "не удалось удалить файл: " + mPath);
             toast(R.string.toast_file_delete_failed);

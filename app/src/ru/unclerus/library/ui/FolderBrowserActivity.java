@@ -1,6 +1,7 @@
 package ru.unclerus.library.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +26,8 @@ import ru.unclerus.library.App;
 import ru.unclerus.library.Logger;
 import ru.unclerus.library.R;
 import ru.unclerus.library.scan.RootRepo;
+import ru.unclerus.library.util.AccessPrompt;
+import ru.unclerus.library.util.FileAccess;
 
 /**
  * S5 «Выбор папки-корня». Файловый навигатор: показывает только читаемые
@@ -32,6 +35,9 @@ import ru.unclerus.library.scan.RootRepo;
  * выбрать текущую папку корнем библиотеки. Запись корня — в фоновом потоке.
  */
 public final class FolderBrowserActivity extends ThemedActivity {
+
+    /** Системный выбор папки (SAF-дерево). */
+    private static final int REQ_SAF_TREE = 2;
 
     private TextView mPath;
     private ArrayAdapter<File> mAdapter;
@@ -65,6 +71,13 @@ public final class FolderBrowserActivity extends ThemedActivity {
             @Override
             public void onClick(View v) {
                 pickCurrent();
+            }
+        });
+        // «Системный выбор» — SAF-папка (fallback, когда прямого доступа нет).
+        findViewById(R.id.fb_sys).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickTree();
             }
         });
 
@@ -186,6 +199,34 @@ public final class FolderBrowserActivity extends ThemedActivity {
                         finish();
                     }
                 });
+            }
+        });
+    }
+
+    /** Системный выбор папки (SAF): добавить дерево корнем и закрыть экран. */
+    private void pickTree() {
+        try {
+            startActivityForResult(FileAccess.openTree(), REQ_SAF_TREE);
+        } catch (Throwable t) {
+            Logger.w("FolderBrowser", "системный выбор папки недоступен: " + t);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQ_SAF_TREE) {
+            return;
+        }
+        final String uri = FileAccess.persistTree(this, data);
+        if (uri == null) {
+            return;
+        }
+        AccessPrompt.addSafRoot(uri, new Runnable() {
+            @Override
+            public void run() {
+                setResult(RESULT_OK);
+                finish();
             }
         });
     }

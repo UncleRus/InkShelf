@@ -18,15 +18,19 @@
     <string name="action_delete_root">Удалить папку</string>
     <string name="action_export_logs">Выгрузить логи</string>
     <string name="action_go">Перейти</string>
+    <string name="action_grant_access">Разрешить доступ</string>
     <string name="action_info">Информация</string>
+    <string name="action_later">Позже</string>
     <string name="action_ok">ОК</string>
     <string name="action_open">Открыть</string>
     <string name="action_open_in_file_manager">Открыть в проводнике</string>
     <string name="action_open_with">Открыть в…</string>
+    <string name="action_pick_folder">Выбрать папку</string>
     <string name="action_pick_this_folder">Выбрать эту папку</string>
     <string name="action_show_file">Показать файл в папке</string>
     <string name="action_start_scan">Начать сканирование</string>
     <string name="action_stop">Стоп</string>
+    <string name="action_system_picker">Системный выбор</string>
     <string name="action_up">Вверх</string>
     <string name="app_name">InkShelf</string>
     <string name="app_tagline">Каталог книг для e-ink</string>
@@ -93,6 +97,9 @@
     <string name="dlg_delete_root_warn">Папка «%1$s» и её книги (%2$s) исчезнут из каталога.</string>
     <string name="dlg_delete_size_label">Размер</string>
     <string name="dlg_delete_warning">Файл будет удалён с устройства безвозвратно, а запись — из библиотеки. Авторы, серии и жанры, у которых не останется книг, исчезнут из списков.</string>
+    <string name="dlg_file_access">Доступ к файлам</string>
+    <string name="dlg_file_access_saf_hint">Если полный доступ недоступен, добавьте папку через системное окно выбора.</string>
+    <string name="dlg_file_access_text">Чтобы найти и проиндексировать книги, приложению нужен доступ к файлам на устройстве.</string>
     <string name="dlg_indexing">Индексация библиотеки</string>
     <string name="dlg_indexing_phase">Читаем метаданные… %1$s из %2$s</string>
     <string name="dlg_indexing_root">Папка: %1$s</string>
@@ -125,6 +132,7 @@
     <string name="reader_default_mark">по умолчанию</string>
     <string name="reader_none">не выбрана</string>
     <string name="root_kind_file">файл</string>
+    <string name="root_kind_saf">системная папка</string>
     <string name="root_never_scanned">ещё не сканировался</string>
     <string name="root_scanned">скан %1$s</string>
     <string name="root_state_no_access">нет доступа</string>
@@ -190,7 +198,8 @@
     <string name="value_mb">%1$s МБ</string>
     <string name="value_no">Нет</string>
     <string name="value_yes">Да</string>
-    <string name="warn_partial_unavailable">Часть книг недоступна — карта памяти не подключена.</string>
+    <string name="warn_no_file_access">Нет доступа к файлам — нажмите, чтобы разрешить.</string>
+    <string name="warn_partial_unavailable">Часть книг недоступна — проверьте папки с книгами.</string>
     <plurals name="books_count">
         <item quantity="one">книга</item>
         <item quantity="few">книги</item>

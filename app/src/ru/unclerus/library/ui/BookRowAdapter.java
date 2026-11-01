@@ -15,7 +15,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.Locale;
 
 import ru.unclerus.library.App;
@@ -232,7 +231,7 @@ public final class BookRowAdapter extends BaseAdapter {
         if (ThumbCache.hasNoCover(bookId)) {
             return;
         }
-        ThumbCache.request(mCtx, bookId, new File(path), format, coverEntry, mCoverListener);
+        ThumbCache.request(mCtx, bookId, path, format, coverEntry, mCoverListener);
     }
 
     private static void showCover(ImageView img, TextView letter, View box, Bitmap bmp) {

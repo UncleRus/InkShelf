@@ -2,6 +2,7 @@ package ru.unclerus.library.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -44,8 +45,11 @@ import ru.unclerus.library.db.SearchDao;
 import ru.unclerus.library.db.SeriesDao;
 import ru.unclerus.library.open.BookActions;
 import ru.unclerus.library.scan.IndexerService;
+import ru.unclerus.library.scan.RootRepo;
+import ru.unclerus.library.util.AccessPrompt;
 import ru.unclerus.library.util.Dialogs;
 import ru.unclerus.library.scan.ProgressBus;
+import ru.unclerus.library.util.FileAccess;
 import ru.unclerus.library.util.Lang;
 import ru.unclerus.library.util.Prefs;
 import ru.unclerus.library.util.Text;
@@ -89,7 +93,14 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     private static final int ACTION_ADD_ROOT = 1;
     private static final int ACTION_SCAN = 2;
 
+    /** Баннер состояния доступа/папок над списком (ST5/ST9). */
+    private static final int BANNER_NONE = 0;
+    private static final int BANNER_ROOTS = 1;  // ST5 → S9 «Папки с книгами»
+    private static final int BANNER_ACCESS = 2; // ST9 → D2 «Доступ к файлам»
+
     private static final int REQ_FOLDER = 1;
+    private static final int REQ_SAF_TREE = 2;
+    private static final int REQ_STORAGE = 3;
 
     private final ExecutorService mBg = Executors.newSingleThreadExecutor();
     private final Handler mUi = new Handler(Looper.getMainLooper());
@@ -110,6 +121,8 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     private ImageButton mClearBtn;
     private TextView mSearchFooter;
     private EditText mSearch;
+    private TextView mBanner;
+    private int mBannerAction = BANNER_NONE;
 
     private final int[] mTabCount = new int[TAB_LABELS.length];
     /** Активная вкладка; по умолчанию «Авторы» (первый запуск или нет запомненной). */
@@ -169,6 +182,15 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         mSearchFooter = findViewById(R.id.search_footer);
         mSearchFooter.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_search, 0, 0, 0);
         mSearchFooter.setCompoundDrawableTintList(getColorStateList(R.color.ink));
+
+        // Баннер состояния (ST5 «часть книг недоступна» / ST9 «нет доступа»).
+        mBanner = findViewById(R.id.banner);
+        mBanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBannerClick();
+            }
+        });
 
         mSearch = findViewById(R.id.search);
         mSearch.setHint(R.string.search_hint);
@@ -342,6 +364,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         // страницы пересчитываются заново.
         mPlan = null;
         refresh();
+        updateBanner();
         // Первый запуск: разовый выбор читалки по умолчанию (D1·b).
         BookActions.maybeAskDefault(this);
     }
@@ -357,6 +380,29 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_FOLDER) {
+            refresh();
+            updateBanner();
+        } else if (requestCode == REQ_SAF_TREE) {
+            final String uri = FileAccess.persistTree(this, data);
+            if (uri != null) {
+                AccessPrompt.addSafRoot(uri, new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, R.string.toast_root_added,
+                                Toast.LENGTH_SHORT).show();
+                        updateBanner();
+                        refresh();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_STORAGE) {
+            updateBanner();
             refresh();
         }
     }
@@ -1183,6 +1229,92 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         startService(i);
     }
 
+    // ------------------------------------------------------------------
+    // Баннеры ST5/ST9 и доступ к файлам (D2)
+    // ------------------------------------------------------------------
+
+    /**
+     * Обновить баннер над списком: нет доступа к файлам (ST9) или часть папок
+     * недоступна (ST5). Состояние читается из БД и из системного разрешения.
+     */
+    private void updateBanner() {
+        if (mBanner == null) {
+            return;
+        }
+        if (!FileAccess.hasAllFiles(this)) {
+            showBanner(R.string.warn_no_file_access, BANNER_ACCESS);
+            return;
+        }
+        boolean bad = false;
+        try {
+            SQLiteDatabase db = App.db().getReadableDatabase();
+            Cursor c = db.rawQuery("SELECT COUNT(*) FROM root WHERE volume_state IN (?,?)"
+                            + " OR permission_state=?",
+                    new String[]{RootRepo.VOL_MISSING, RootRepo.VOL_NO_ACCESS,
+                            RootRepo.PERM_DENIED});
+            try {
+                bad = c.moveToFirst() && c.getInt(0) > 0;
+            } finally {
+                c.close();
+            }
+        } catch (Throwable t) {
+            Logger.w("MainActivity", "не удалось прочитать состояние корней: " + t);
+        }
+        if (bad) {
+            showBanner(R.string.warn_partial_unavailable, BANNER_ROOTS);
+        } else {
+            hideBanner();
+        }
+    }
+
+    private void showBanner(int textRes, int action) {
+        mBannerAction = action;
+        mBanner.setText(textRes);
+        mBanner.setVisibility(View.VISIBLE);
+    }
+
+    private void hideBanner() {
+        mBannerAction = BANNER_NONE;
+        mBanner.setVisibility(View.GONE);
+    }
+
+    private void onBannerClick() {
+        if (mBannerAction == BANNER_ROOTS) {
+            startActivity(new Intent(this, RootsActivity.class)); // ST5 → S9
+        } else if (mBannerAction == BANNER_ACCESS) {
+            showAccessDialog(); // ST9 → D2
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        updateBanner();
+    }
+
+    /** D2 «Доступ к файлам»: объяснение + «Позже» · «Выбрать папку» · «Разрешить доступ». */
+    private void showAccessDialog() {
+        AccessPrompt.show(this, new AccessPrompt.Actions() {
+            @Override
+            public void onGrant() {
+                FileAccess.requestManage(MainActivity.this, REQ_STORAGE);
+            }
+
+            @Override
+            public void onPickFolder() {
+                pickTree();
+            }
+        });
+    }
+
+    private void pickTree() {
+        try {
+            startActivityForResult(FileAccess.openTree(), REQ_SAF_TREE);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, R.string.state_no_file_manager, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void closeCursor() {
         if (mCursor != null) {
             mCursor.close();
@@ -1211,6 +1343,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         if (p.phase == ProgressBus.PHASE_DONE && mScanActive) {
             mScanActive = false;
             Toast.makeText(this, R.string.toast_index_updated, Toast.LENGTH_SHORT).show();
+            updateBanner();
             refresh();
         } else if (p.phase == ProgressBus.PHASE_ERROR) {
             mScanActive = false;

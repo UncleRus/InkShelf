@@ -18,15 +18,19 @@
     <string name="action_delete_root">Delete folder</string>
     <string name="action_export_logs">Export logs</string>
     <string name="action_go">Go</string>
+    <string name="action_grant_access">Grant access</string>
     <string name="action_info">Info</string>
+    <string name="action_later">Later</string>
     <string name="action_ok">OK</string>
     <string name="action_open">Open</string>
     <string name="action_open_in_file_manager">Open in file manager</string>
     <string name="action_open_with">Open with…</string>
+    <string name="action_pick_folder">Choose folder</string>
     <string name="action_pick_this_folder">Select this folder</string>
     <string name="action_show_file">Show file in folder</string>
     <string name="action_start_scan">Start scanning</string>
     <string name="action_stop">Stop</string>
+    <string name="action_system_picker">System picker</string>
     <string name="action_up">Up</string>
     <string name="app_name">InkShelf</string>
     <string name="app_tagline">E-ink book catalog</string>
@@ -93,6 +97,9 @@
     <string name="dlg_delete_root_warn">The folder “%1$s” and its books (%2$s) will disappear from the catalog.</string>
     <string name="dlg_delete_size_label">Size</string>
     <string name="dlg_delete_warning">The file will be permanently deleted from the device and the record — from the library. Authors, series and genres left without books will disappear from the lists.</string>
+    <string name="dlg_file_access">File access</string>
+    <string name="dlg_file_access_saf_hint">If full access is unavailable, add a folder via the system picker.</string>
+    <string name="dlg_file_access_text">To find and index your books, the app needs access to files on the device.</string>
     <string name="dlg_indexing">Indexing the library</string>
     <string name="dlg_indexing_phase">Reading metadata… %1$s of %2$s</string>
     <string name="dlg_indexing_root">Folder: %1$s</string>
@@ -125,6 +132,7 @@
     <string name="reader_default_mark">default</string>
     <string name="reader_none">not set</string>
     <string name="root_kind_file">file</string>
+    <string name="root_kind_saf">system folder</string>
     <string name="root_never_scanned">not scanned yet</string>
     <string name="root_scanned">scanned %1$s</string>
     <string name="root_state_no_access">no access</string>
@@ -190,7 +198,8 @@ Add a folder with books.</string>
     <string name="value_mb">%1$s MB</string>
     <string name="value_no">No</string>
     <string name="value_yes">Yes</string>
-    <string name="warn_partial_unavailable">Some books are unavailable — the storage card is not mounted.</string>
+    <string name="warn_no_file_access">No file access — tap to allow.</string>
+    <string name="warn_partial_unavailable">Some books are unavailable — check the book folders.</string>
     <plurals name="books_count">
         <item quantity="one">book</item>
         <item quantity="few">books</item>

@@ -29,6 +29,7 @@ import ru.unclerus.library.R;
 import ru.unclerus.library.db.Cleanup;
 import ru.unclerus.library.db.Schema;
 import ru.unclerus.library.scan.RootRepo;
+import ru.unclerus.library.scan.SafDocs;
 import ru.unclerus.library.util.Dialogs;
 
 /**
@@ -173,7 +174,7 @@ public final class RootsActivity extends ThemedActivity {
             final Item item = items.get(i);
             View row = getLayoutInflater().inflate(R.layout.row_root, mList, false);
 
-            ((TextView) row.findViewById(R.id.root_path)).setText(item.path);
+            ((TextView) row.findViewById(R.id.root_path)).setText(displayPath(item));
             ((TextView) row.findViewById(R.id.root_sub)).setText(subtitle(item, fmt));
 
             ImageView icon = row.findViewById(R.id.root_icon);
@@ -192,10 +193,16 @@ public final class RootsActivity extends ThemedActivity {
         }
     }
 
+    /** Отображаемый путь папки: для SAF — читаемое имя дерева, иначе путь. */
+    private String displayPath(Item it) {
+        return RootRepo.KIND_SAF.equals(it.kind) ? SafDocs.displayPath(it.path) : it.path;
+    }
+
     /** Подпись строки: тип · книги · [состояние] · время скана. */
     private String subtitle(Item it, SimpleDateFormat fmt) {
         StringBuilder b = new StringBuilder();
-        b.append(RootRepo.KIND_FILE.equals(it.kind) ? getString(R.string.root_kind_file) : "SAF");
+        b.append(getString(RootRepo.KIND_FILE.equals(it.kind)
+                ? R.string.root_kind_file : R.string.root_kind_saf));
         b.append(" · ").append(it.books).append(" ").append(getResources().getQuantityString(
                 R.plurals.books_count, it.books));
         String st = state(it);

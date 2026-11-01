@@ -83,6 +83,15 @@
             android:layout_height="wrap_content"
             android:text="@string/action_up" />
 
+        <!-- «Системный выбор»: SAF-папка (fallback, слово SAF не показываем) -->
+        <Button
+            android:id="@+id/fb_sys"
+            style="@style/Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/space_xs"
+            android:text="@string/action_system_picker" />
+
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"

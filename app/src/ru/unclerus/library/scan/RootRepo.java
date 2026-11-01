@@ -114,8 +114,20 @@ public final class RootRepo {
      *         (сработал {@code UNIQUE(path)})
      */
     public static long add(SQLiteDatabase db, String path, String kind) {
+        return add(db, path, null, kind);
+    }
+
+    /**
+     * Добавить корень с указанием SAF-URI (для {@link #KIND_SAF}: {@code path} —
+     * строка tree-URI, {@code uri} — она же; {@code UNIQUE(path)} защищает от
+     * дублей).
+     *
+     * @return id новой строки или {@code -1}, если такой путь уже есть
+     */
+    public static long add(SQLiteDatabase db, String path, String uri, String kind) {
         ContentValues v = new ContentValues();
         v.put("path", path);
+        v.put("uri", uri);
         v.put("kind", kind == null ? KIND_FILE : kind);
         v.put("enabled", 1);
         v.put("last_scan_at", 0);

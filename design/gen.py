@@ -220,8 +220,10 @@ S_ = {
     'btn_start_scan':  ('action_start_scan', 'Начать сканирование', 'Start scanning'),
     'st_nothing_found': ('state_nothing_found', 'Ничего не найдено', 'Nothing found'),
     'st_history_empty': ('state_history_empty', 'Откройте любую книгу', 'Open any book'),
-    'warn_no_storage': ('warn_partial_unavailable', 'Часть книг недоступна — карта памяти не подключена.',
-                        'Some books are unavailable — the storage card is not mounted.'),
+    'warn_partial':    ('warn_partial_unavailable', 'Часть книг недоступна — проверьте папки с книгами.',
+                        'Some books are unavailable — check the book folders.'),
+    'warn_no_access':  ('warn_no_file_access', 'Нет доступа к файлам — нажмите, чтобы разрешить.',
+                        'No file access — tap to allow.'),
     'scan_footer':     ('scan_progress_footer', 'Индексация: просканировано %1$s · найдено %2$s · добавлено %3$s',
                         'Indexing: scanned %1$s · found %2$s · added %3$s'),
     'found_count':     ('search_found_count', 'Найдено: %1$s', 'Found: %1$s'),
@@ -265,6 +267,19 @@ S_ = {
     'set_access':      ('setting_file_access', 'Доступ к файлам', 'File access'),
     'access_granted':  ('access_granted', 'Разрешён', 'Granted'),
     'access_denied':   ('access_denied', 'Не разрешён', 'Not granted'),
+    # --- D2 запрос доступа к файлам (нет MANAGE_EXTERNAL_STORAGE) ---
+    'dlg_access':      ('dlg_file_access', 'Доступ к файлам', 'File access'),
+    'access_text':     ('dlg_file_access_text',
+                        'Чтобы найти и проиндексировать книги, приложению нужен доступ '
+                        'к файлам на устройстве.',
+                        'To find and index your books, the app needs access to files on the device.'),
+    'access_saf_hint': ('dlg_file_access_saf_hint',
+                        'Если полный доступ недоступен, добавьте папку через системное окно выбора.',
+                        'If full access is unavailable, add a folder via the system picker.'),
+    'btn_grant':       ('action_grant_access', 'Разрешить доступ', 'Grant access'),
+    'btn_pick_saf':    ('action_pick_folder', 'Выбрать папку', 'Choose folder'),
+    'btn_later':       ('action_later', 'Позже', 'Later'),
+    'btn_sys_pick':    ('action_system_picker', 'Системный выбор', 'System picker'),
     'set_diagnostics': ('setting_diagnostics', 'Диагностика', 'Diagnostics'),
     'set_about':       ('setting_about', 'О программе', 'About'),
     'reader_none':     ('reader_none', 'не выбрана', 'not set'),
@@ -278,6 +293,7 @@ S_ = {
     # --- S9 папки с книгами ---
     'title_roots':     ('title_root_folders', 'Папки с книгами', 'Book folders'),
     'root_kind_file':  ('root_kind_file', 'файл', 'file'),
+    'root_kind_saf':   ('root_kind_saf', 'системная папка', 'system folder'),
     'root_no_access':  ('root_state_no_access', 'нет доступа', 'no access'),
     'root_volume_off': ('root_state_volume_off', 'том отключён', 'volume off'),
     'root_scanned':    ('root_scanned', 'скан %1$s', 'scanned %1$s'),
@@ -757,7 +773,7 @@ def roots_rows():
                  '%s · %s · %s' % (tr('root_kind_file'), n_plural('books', 677), scan)) +
         row_root('/storage/emulated/0/Incoming',
                  '%s · %s · %s' % (tr('root_kind_file'), n_plural('books', 23), scan)) +
-        row_root('Nexus/Books', 'SAF · %s' % tr('root_no_access'), warn=True))
+        row_root('Nexus/Books', '%s · %s' % (tr('root_kind_saf'), tr('root_no_access')), warn=True))
 
 
 def sect(text, bg=None):
@@ -779,9 +795,12 @@ def setting(ico, title, value='', chev=True):
             % (lead, esc(title), v, c))
 
 
-def banner(text, warn=False):
+def banner(text, warn=False, chev=False):
+    """Строка-баннер над списком. `warn` — с иконкой «внимание»,
+    `chev` — с шевроном у правого края (баннер кликабелен, ведёт к настройкам)."""
     pre = svg_icon('alert', dp(18), C['bannerink']) if warn else ''
-    return '<div class="banner">%s%s</div>' % (pre, esc(text))
+    tail = ('<span style="flex:1"></span>%s' % svg_icon('chevron', dp(20), C['bannerink'])) if chev else ''
+    return '<div class="banner">%s%s%s</div>' % (pre, esc(text), tail)
 
 
 def center(icon_name, msg, btn=None, big=False, btn_icon=None):
@@ -1085,7 +1104,7 @@ def s07_main_empty():
 
 def s08_main_banner_scan():
     return (STATUS + searchbar() + tabs(5) +
-            banner(tr('warn_no_storage'), warn=True) +
+            banner(tr('warn_partial'), warn=True, chev=True) +
             '<div class="list">' +
             ''.join(row_book(*b, missing=(i == 3))
                     for i, b in enumerate(BOOKS[:6])) + '</div>' +
@@ -1224,8 +1243,10 @@ def s13_folder_picker():
             row_simple('Download', ico='folder') + row_simple('Documents', ico='folder') +
             row_simple('Fonts', ico='folder') + row_simple('Music', ico='folder') +
             row_simple('Pictures', ico='folder') + '</div>' +
-            '<div class="actions"><div class="btn">%s%s</div><div class="btn">%s%s</div></div>'
+            '<div class="actions"><div class="btn">%s%s</div><div class="btn">%s%s</div>'
+            '<div class="btn">%s%s</div></div>'
             % (svg_icon('chevron_down', dp(20), C['ink']), tr('btn_up'),
+               svg_icon('key', dp(20), C['ink']), tr('btn_sys_pick'),
                svg_icon('check' if 'check' in ICONS else 'folder_plus', dp(20), C['ink']),
                tr('btn_pick_here')))
 
@@ -1503,6 +1524,34 @@ def s30_dlg_delete_root():
             footer(tr('note_roots'), 'key') + overlay(d9))
 
 
+def s31_dlg_file_access():
+    """D2: нет MANAGE_EXTERNAL_STORAGE — объяснение + «Разрешить доступ»
+    (системный экран) и fallback «Выбрать папку» (системный выбор, SAF).
+    Позади — S1 с баннером ST9."""
+    body = ('%s\n\n%s'
+            % (esc(tr('access_text')), esc(tr('access_saf_hint'))))
+    d2 = ('<div class="dlg" style="width:84%%">%s<div class="body">%s</div>'
+          '<div class="acts"><div class="btn">%s</div><div class="btn">%s</div>'
+          '<div class="btn">%s</div></div></div>'
+          % (dlg_title('key', tr('dlg_access')), body,
+             esc(tr('btn_later')), esc(tr('btn_pick_saf')), esc(tr('btn_grant'))))
+    return (STATUS + searchbar() + tabs(5) +
+            banner(tr('warn_no_access'), warn=True, chev=True) +
+            '<div class="list">' + ''.join(row_book(*b) for b in BOOKS[:8]) + '</div>' +
+            overlay(d2, 0.4))
+
+
+def s32_main_banner_unavailable():
+    """ST5: часть книг недоступна (отозван доступ / том отключён) — баннер
+    с переходом к настройкам, недоступные строки приглушены."""
+    return (STATUS + searchbar() + tabs(5) +
+            banner(tr('warn_partial'), warn=True, chev=True) +
+            '<div class="list">' +
+            ''.join(row_book(*b, missing=(i in (3, 5)))
+                    for i, b in enumerate(BOOKS[:8])) + '</div>' +
+            pager(1, 677))
+
+
 BUILDERS = [
     ('01_main_authors', s01_main_authors),
     ('02_main_allbooks', s02_main_allbooks),
@@ -1534,6 +1583,8 @@ BUILDERS = [
     ('28_menu_book', s28_menu_book),
     ('29_root_folders', s29_root_folders),
     ('30_dlg_delete_root', s30_dlg_delete_root),
+    ('31_dlg_file_access', s31_dlg_file_access),
+    ('32_main_banner_unavailable', s32_main_banner_unavailable),
 ]
 
 

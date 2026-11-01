@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import ru.unclerus.library.App;
 import ru.unclerus.library.R;
 import ru.unclerus.library.fmt.BookFormat;
 import ru.unclerus.library.ui.BookActivity;
+import ru.unclerus.library.util.BookFiles;
 import ru.unclerus.library.util.Dialogs;
 import ru.unclerus.library.util.Prefs;
 import ru.unclerus.library.util.Text;
@@ -115,9 +117,14 @@ public final class BookActions {
 
     /** «Показать файл в папке»: сторонний файловый менеджер (решение №15). */
     public static void showInFolder(Activity a, String path) {
-        File f = new File(path == null ? "" : path);
-        File dir = f.getParentFile() != null ? f.getParentFile() : f;
-        Uri uri = Uri.fromFile(dir);
+        Uri uri;
+        if (BookFiles.isSaf(path)) {
+            uri = safParent(path);
+        } else {
+            File f = new File(path == null ? "" : path);
+            File dir = f.getParentFile() != null ? f.getParentFile() : f;
+            uri = Uri.fromFile(dir);
+        }
         if (launchFolder(a, uri, "resource/folder")) {
             return;
         }
@@ -125,6 +132,21 @@ public final class BookActions {
             return;
         }
         Toast.makeText(a, R.string.state_no_file_manager, Toast.LENGTH_SHORT).show();
+    }
+
+    /** Родительский документ SAF-книги (папка, её содержащая) или сама книга. */
+    private static Uri safParent(String path) {
+        Uri doc = Uri.parse(path);
+        try {
+            String docId = DocumentsContract.getDocumentId(doc);
+            int slash = docId.lastIndexOf('/');
+            String parentId = slash > 0 ? docId.substring(0, slash) : docId;
+            String treeId = DocumentsContract.getTreeDocumentId(doc);
+            return Uri.parse("content://" + doc.getAuthority() + "/tree/" + Uri.encode(treeId)
+                    + "/document/" + Uri.encode(parentId));
+        } catch (Throwable t) {
+            return doc;
+        }
     }
 
     /**
@@ -183,6 +205,18 @@ public final class BookActions {
     }
 
     private static String nameOf(String path) {
-        return path == null ? "" : new File(path).getName();
+        if (path == null) {
+            return "";
+        }
+        if (BookFiles.isSaf(path)) {
+            try {
+                String id = DocumentsContract.getDocumentId(Uri.parse(path));
+                int slash = id.lastIndexOf('/');
+                return slash >= 0 ? id.substring(slash + 1) : id;
+            } catch (Throwable t) {
+                return path;
+            }
+        }
+        return new File(path).getName();
     }
 }

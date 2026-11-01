@@ -1,20 +1,13 @@
 package ru.unclerus.library.ui;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,7 +31,9 @@ import ru.unclerus.library.open.OpenWithDialog;
 import ru.unclerus.library.open.ReaderInfo;
 import ru.unclerus.library.open.ReaderRegistry;
 import ru.unclerus.library.scan.IndexerService;
+import ru.unclerus.library.util.AccessPrompt;
 import ru.unclerus.library.util.Dialogs;
+import ru.unclerus.library.util.FileAccess;
 import ru.unclerus.library.util.Prefs;
 
 /**
@@ -73,6 +68,7 @@ public final class SettingsActivity extends ThemedActivity {
     private static final int A_ABOUT = 12;
 
     private static final int REQ_STORAGE = 1;
+    private static final int REQ_SAF_TREE = 2;
 
     /** Варианты размера шрифта (S4.3), множитель поверх системного. */
     private static final float[] FONT_SCALES = {1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
@@ -242,7 +238,11 @@ public final class SettingsActivity extends ThemedActivity {
                 showCacheDialog();
                 break;
             case A_ACCESS:
-                requestAccess();
+                if (FileAccess.hasAllFiles(this)) {
+                    Toast.makeText(this, R.string.access_granted, Toast.LENGTH_SHORT).show();
+                } else {
+                    showAccessDialog();
+                }
                 break;
             case A_DIAGNOSTICS:
                 startActivity(new Intent(this, DiagnosticsActivity.class));
@@ -531,26 +531,56 @@ public final class SettingsActivity extends ThemedActivity {
     // ------------------------------------------------------------------
 
     private boolean hasAllFiles() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager();
-        }
-        return checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED;
+        return FileAccess.hasAllFiles(this);
     }
 
     private void requestAccess() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Intent i = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            try {
-                startActivity(i);
-            } catch (ActivityNotFoundException e) {
-                startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+        FileAccess.requestManage(this, REQ_STORAGE);
+    }
+
+    /** D2 «Доступ к файлам» (тап по строке S4.10). */
+    private void showAccessDialog() {
+        AccessPrompt.show(this, new AccessPrompt.Actions() {
+            @Override
+            public void onGrant() {
+                requestAccess();
             }
-        } else {
-            requestPermissions(new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_STORAGE);
+
+            @Override
+            public void onPickFolder() {
+                try {
+                    startActivityForResult(FileAccess.openTree(), REQ_SAF_TREE);
+                } catch (Throwable t) {
+                    Toast.makeText(SettingsActivity.this, R.string.state_no_file_manager,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_SAF_TREE) {
+            final String uri = FileAccess.persistTree(this, data);
+            if (uri != null) {
+                AccessPrompt.addSafRoot(uri, new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SettingsActivity.this, R.string.toast_root_added,
+                                Toast.LENGTH_SHORT).show();
+                        buildRows();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_STORAGE) {
+            buildRows();
         }
     }
 }

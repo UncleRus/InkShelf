@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.unclerus.library.App;
 import ru.unclerus.library.Logger;
 import ru.unclerus.library.db.MetaDao;
 import ru.unclerus.library.db.Schema;
@@ -19,6 +20,7 @@ import ru.unclerus.library.fmt.MetadataReader;
 import ru.unclerus.library.fmt.epub.EpubReader;
 import ru.unclerus.library.fmt.fb2.Fb2Reader;
 import ru.unclerus.library.fmt.mobi.MobiReader;
+import ru.unclerus.library.util.BookFiles;
 
 /**
  * Фаза B (PLAN §7): метаданные для книг с {@code needs_parse=1}.
@@ -156,12 +158,17 @@ public final class ParsePhase {
                 r.error = "нет читателя для формата " + row.format;
                 return r;
             }
-            File f = new File(row.path);
-            if (!f.isFile()) {
+            File f = BookFiles.open(App.ctx(), row.path);
+            if (f == null) {
                 r.error = "файл недоступен";
+                Logger.w("ParsePhase", row.path + ": файл недоступен");
                 return r;
             }
-            r.meta = reader.read(f);
+            try {
+                r.meta = reader.read(f);
+            } finally {
+                BookFiles.release(row.path, f);
+            }
         } catch (Throwable t) {
             r.error = t.toString();
             if (r.error == null || r.error.isEmpty()) {
