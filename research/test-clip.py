@@ -52,6 +52,9 @@ class Adb:
     def is_root(self):
         return "uid=0" in self.sh("id")
 
+    def su_sh(self, cmd, timeout=60):
+        return self.sh("su -c " + shquote(cmd), timeout=timeout)
+
     def priv_sh(self, cmd, timeout=60):
         if self.is_root():
             return self.sh(cmd, timeout=timeout)
@@ -129,6 +132,7 @@ def set_font_scale(adb, scale, prefs_dir):
     time.sleep(1)
     xml = ("<?xml version='1.0' encoding='utf-8' standalone='yes' ?>\n"
            "<map>\n    <int name=\"main_tab\" value=\"5\" />\n"
+           "    <boolean name=\"reader_asked\" value=\"true\" />\n"
            "    <float name=\"font_scale\" value=\"%s\" />\n</map>\n" % scale)
     tmp = "/data/local/tmp/_prefs.xml"
     with open("/tmp/_clip_prefs.xml", "w", encoding="utf-8") as f:
@@ -184,6 +188,11 @@ def main():
     failures = []
     report = []
 
+    # Сохранить исходные настройки: тест перезаписывает prefs (шрифт/вкладка).
+    backup = args.prefs_dir + "/library_prefs.xml.clipbak"
+    adb.priv_sh("if [ -f %s/library_prefs.xml ]; then cp -f %s/library_prefs.xml %s; fi"
+                % (args.prefs_dir, args.prefs_dir, backup))
+
     print("== статическая проверка разметки ==")
     probs = static_check(args.layout_dir)
     if probs:
@@ -221,6 +230,7 @@ def main():
         scale_line_h[scale] = line_h
         n_overflow = 0
         n_overlap = 0
+        n_vertical = 0
         min_h = 10 ** 9
         max_h = 0
         for r in rows:
@@ -229,6 +239,11 @@ def main():
                 max_h = max(max_h, t["h"])
                 if t["x1"] < lst["x1"] or t["x2"] > lst["x2"]:
                     n_overflow += 1
+                if t["y1"] < lst["y1"] - 2 or t["y2"] > lst["y2"] + 2:
+                    n_vertical += 1
+            cov = r.get("cover")
+            if cov and cov["y2"] > lst["y2"] + 2:
+                n_vertical += 1
             ts = r["texts"]
             for a, b in zip(ts, ts[1:]):
                 if a["y2"] > b["y1"] + 2:
@@ -239,9 +254,13 @@ def main():
 
         print("  строк: %d · однострочная высота (title)=%d px · диапазон высот текста: %d..%d px"
               % (len(rows), line_h, min_h, max_h))
-        print("  горизонтальных выходов за список: %d · наложений: %d" % (n_overflow, n_overlap))
+        print("  горизонтальных выходов за список: %d · вертикальных: %d · наложений: %d"
+              % (n_overflow, n_vertical, n_overlap))
         if n_overflow:
             failures.append("fontScale %s: %d текстовых узлов шире списка" % (scale, n_overflow))
+        if n_vertical:
+            failures.append("fontScale %s: %d строк выходят за низ/верх списка (обрезка)"
+                            % (scale, n_vertical))
         if n_overlap:
             failures.append("fontScale %s: %d наложений текстовых узлов" % (scale, n_overlap))
         if line_h <= 0:
@@ -267,6 +286,10 @@ def main():
                     failures.append("длинное название не перенеслось при %s: %r (%d px -> %d px)"
                                     % (big, hid[:40], hs[base], hs[big]))
         print("  длинных названий: %d, перенесены при %s: %d" % (long_all, big, long_ok))
+
+    # Вернуть исходные настройки.
+    adb.priv_sh("if [ -f %s ]; then cp -f %s %s/library_prefs.xml; rm -f %s; fi"
+                % (backup, backup, args.prefs_dir, backup))
 
     print()
     if failures:

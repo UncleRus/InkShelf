@@ -891,6 +891,17 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         }
         mRows = RowList.of(start, end, searching() ? null : mSections);
         mList.setAdapter(newAdapter(mCursor, mRows));
+        // NFR-1: если длинное название сделало строку выше номинальной и
+        // последняя строка не влезла — поднять высоту и перестроить страницу.
+        mList.post(new Runnable() {
+            @Override
+            public void run() {
+                if (PageFit.raiseIfOverflow(mList, mViewport, itemLayout())) {
+                    mPlan = null;
+                    renderPage();
+                }
+            }
+        });
         mPageInfo.setText(getString(R.string.pagination_range,
                 String.valueOf(start + 1), String.valueOf(end),
                 String.valueOf(total)));

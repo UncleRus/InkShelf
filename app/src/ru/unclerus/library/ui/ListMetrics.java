@@ -106,6 +106,20 @@ public final class ListMetrics {
         setText(row, R.id.section_letter, "А");
     }
 
+    /**
+     * Поднять кэш высоты строки до фактической (после отрисовки страницы).
+     * Нужно, когда длинное название переносится и строка становится выше
+     * образца; см. {@link PageFit}. Высота только растёт.
+     */
+    public static void raiseRowHeight(int rowLayoutId, int heightPx) {
+        if (heightPx <= 0) {
+            return;
+        }
+        if (heightPx > sRowHeight.get(rowLayoutId, 0)) {
+            sRowHeight.put(rowLayoutId, heightPx);
+        }
+    }
+
     /** Сбросить кэш высоты (например, после смены масштаба шрифта). */
     public static void reset() {
         sRowHeight.clear();

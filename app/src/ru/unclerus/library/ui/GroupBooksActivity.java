@@ -336,6 +336,16 @@ public final class GroupBooksActivity extends ThemedActivity {
         RowList rows = mGrouped ? RowList.of(start, end, mSections) : null;
         mRows = rows;
         mList.setAdapter(new BookRowAdapter(this, mCursor, rows));
+        // NFR-1: поднять высоту строки, если длинное название не влезло.
+        mList.post(new Runnable() {
+            @Override
+            public void run() {
+                if (PageFit.raiseIfOverflow(mList, mViewport, BookRowAdapter.rowLayout(GroupBooksActivity.this))) {
+                    mPlan = null;
+                    renderPage();
+                }
+            }
+        });
         mPageInfo.setText(getString(R.string.pagination_range,
                 String.valueOf(start + 1), String.valueOf(end), String.valueOf(mTotal)));
         updatePager(pages);

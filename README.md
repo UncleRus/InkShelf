@@ -83,4 +83,4 @@ bash design/render.sh
 ## Структура
 - `app/src/ru/unclerus/library/` — Java-исходники (без внешних зависимостей).
 - `app/res/` — ресурсы; `values/` (ru, default), `values-en/` (en).
-- `research/` — профиль коллекции и матрица запуска читалок.
+- `research/` — профиль коллекции, матрица запуска читалок, скрипты M9 и отчёт `m9-report.md`.
