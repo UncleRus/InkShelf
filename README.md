@@ -10,19 +10,65 @@
 - `PLAN.md` — план по этапам M0–M9, технические решения, карта файлов.
 - `UI.md` — инвентарь экранов, диалогов, типов строк и состояний.
 
-## Сборка
-Java 8, без Gradle и AndroidX; только Android SDK (`aapt2`, `d8`, `zipalign`,
-`apksigner`) и `android.jar`. Путь к SDK берётся из `ANDROID_TOOLS` (по умолчанию
-`../../tools`).
+## Сборка из исходников
+Gradle и AndroidX не используются: сборка идёт напрямую инструментами Android SDK.
+Исходный уровень языка — **Java 8** (компилятор JDK 21 вызывается с `-source 8
+-target 8`).
 
-```bash
-bash build.sh          # → Library.apk
-adb install -r Library.apk
+### Что нужно
+- **JDK 21** — для `javac`, `keytool`, `apksigner`.
+- **Android SDK** — build-tools (`aapt2`, `d8`, `zipalign`, `apksigner`) и платформа
+  `android-34` (`android.jar`).
+- `zip` в `PATH`.
+
+### Раскладка инструментов
+`build.sh` ожидает такую структуру (задаётся переменной `ANDROID_TOOLS`):
+
+```
+$ANDROID_TOOLS/
+├── android-sdk/
+│   ├── build-tools/android-14/     # aapt2, d8, zipalign, apksigner
+│   └── platforms/android-34/android.jar
+└── jdk/jdk-21/                     # JAVA_HOME
 ```
 
-Ключ подписи `signing/library.keystore` и пароль к нему (`signing/keystore.pass`)
-локальные и в репозиторий не входят. При первой сборке без ключа он генерируется
-автоматически; пароль можно задать переменной `LIB_KS_PASS`.
+По умолчанию `ANDROID_TOOLS` = `<корень проекта>/../../tools`.
+
+| Переменная | По умолчанию | Назначение |
+|---|---|---|
+| `ANDROID_TOOLS` | `<проект>/../../tools` | корень с Android SDK и JDK |
+| `JAVA_HOME` | `$ANDROID_TOOLS/jdk/jdk-21` | JDK для javac/apksigner/keytool |
+| `LIB_KS` | `signing/library.keystore` | путь к ключу подписи |
+| `LIB_KS_ALIAS` | `library` | alias ключа |
+| `LIB_KS_PASS` | — | пароль ключа (иначе берётся/создаётся `signing/keystore.pass`) |
+
+### Сборка
+```bash
+git clone <URL> inkshelf && cd inkshelf
+ANDROID_TOOLS=/path/to/tools bash build.sh   # → Library.apk
+```
+
+Скрипт выполняет цепочку `aapt2 compile → aapt2 link → javac → d8 → zipalign →
+apksigner` и в конце печатает сертификат подписи. Промежуточные файлы — в `build/`.
+
+### Подпись и обновления
+Ключ `signing/library.keystore` и пароль к нему (`signing/keystore.pass`) в
+репозиторий не входят. Если ключа нет, `build.sh` сгенерирует новый ключ и
+случайный пароль. Свой пароль можно задать заранее:
+
+```bash
+LIB_KS_PASS='...' bash build.sh
+# либо положить пароль в signing/keystore.pass
+```
+
+Сохраняйте каталог `signing/` между сборками. Смена ключа меняет подпись APK, и
+такое обновление не установится поверх (`adb install -r`) — придётся удалить
+приложение и поставить заново.
+
+### Установка
+```bash
+adb install -r Library.apk
+```
 
 ## Макеты и строки
 `design/gen.py` — единый источник строк RU/EN (`res/values/strings.xml`,
