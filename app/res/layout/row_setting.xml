@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Строка настройки: иконка + название + значение + шеврон (см. gen.py setting()). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/set_row_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:tint="@color/icon"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/space_m"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/set_row_title"
+            style="@style/Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="none" />
+
+        <TextView
+            android:id="@+id/set_row_sub"
+            style="@style/Text.Count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="none"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/set_row_value"
+        style="@style/Text.Count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/space_s" />
+
+    <ImageView
+        android:id="@+id/set_row_chev"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_chevron"
+        android:tint="@color/icon"
+        android:contentDescription="@null" />
+</LinearLayout>

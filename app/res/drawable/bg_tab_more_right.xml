@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Фон стрелки прокрутки вкладок (правая): бумага + линия у внутреннего края. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <color android:color="@color/paper" />
+    </item>
+    <item
+        android:width="1dp"
+        android:gravity="left">
+        <color android:color="@color/divider" />
+    </item>
+</layer-list>

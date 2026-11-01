@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- S5 «Выбор папки-корня»: шапка, текущий путь, список каталогов, нижние кнопки. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/tab_min_h"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageButton
+            android:id="@+id/fb_back"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/action_up" />
+
+        <TextView
+            android:id="@+id/fb_title"
+            style="@style/Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/space_s"
+            android:text="@string/title_pick_folder" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fb_path"
+        style="@style/Text.Meta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_xs"
+        android:paddingBottom="@dimen/space_s"
+        android:singleLine="true"
+        android:ellipsize="start" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <ListView
+        android:id="@+id/fb_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/dither"
+        android:cacheColorHint="#00000000"
+        android:divider="@color/divider"
+        android:dividerHeight="@dimen/divider_h"
+        android:scrollbars="none" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/space_s"
+        android:paddingTop="@dimen/space_xs"
+        android:paddingBottom="@dimen/space_xs">
+
+        <Button
+            android:id="@+id/fb_up"
+            style="@style/Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_up" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/fb_pick"
+            style="@style/Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_pick_this_folder" />
+    </LinearLayout>
+</LinearLayout>

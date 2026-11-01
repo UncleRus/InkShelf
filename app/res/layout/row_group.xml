@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Строка классификатора (автор/жанр/серия): иконка, имя, счётчик, шеврон. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/group_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:tint="@color/icon"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/group_name"
+        style="@style/Text.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/space_m"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/group_count"
+        style="@style/Badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/group_chev"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="@dimen/space_s"
+        android:src="@drawable/ic_chevron"
+        android:tint="@color/icon"
+        android:contentDescription="@null" />
+</LinearLayout>

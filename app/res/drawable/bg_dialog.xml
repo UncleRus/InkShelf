@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Фон панели диалога (D1/D1·b/D5/D6/D10/D11 и т. п.), как в макете: белая
+  панель, чёрная рамка 1dp, радиус 6dp (design/gen.py, селектор .dlg).
+  Платформенный фон панели AlertDialog (dialog_border_device_default_light:
+  толстый контур + скругление) на e-ink выглядит грубо и не совпадает с
+  макетом, поэтому панель перекрашивается этим drawable (util/Dialogs.java).
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/paper" />
+    <stroke android:width="1dp" android:color="@color/ink" />
+    <corners android:radius="6dp" />
+</shape>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Содержимое диалогов D1 «Открыть в…» (макет 16), D1·b «Читалка по умолчанию»
+  (макет 25) и D6 «Меню книги» (макет 28). Строки читалок и пункты меню
+  добавляются кодом в @id/dlg_items; @id/dlg_hint — подсказка режима первого
+  запуска. Кнопка «Отмена» — кнопка AlertDialog, не здесь.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/dialog_pad"
+        android:paddingBottom="@dimen/dialog_pad">
+
+        <TextView
+            android:id="@+id/dlg_hint"
+            style="@style/Text.Meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/dialog_pad"
+            android:paddingRight="@dimen/dialog_pad"
+            android:paddingBottom="@dimen/space_s"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/dlg_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>

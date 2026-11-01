@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S9 «Папки с книгами» (макет 29): список корней (V9), кнопка «Добавить папку»
+  и подпись-пояснение. Пустое состояние (state_no_roots) показывается вместо
+  списка, когда корней нет. NFR-1: путь и подпись строки переносятся, высоты — wrap.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/tab_min_h"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageButton
+            android:id="@+id/root_back"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/action_up" />
+
+        <TextView
+            android:id="@+id/root_title"
+            style="@style/Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/space_s"
+            android:text="@string/title_root_folders" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <!-- Пустое состояние: занимает всю область списка, когда корней нет. -->
+    <TextView
+        android:id="@+id/root_empty"
+        style="@style/Text.Meta"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/space_xl"
+        android:paddingRight="@dimen/space_xl"
+        android:paddingTop="@dimen/space_xl"
+        android:paddingBottom="@dimen/space_xl"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/state_no_roots" />
+
+    <ScrollView
+        android:id="@+id/root_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/dither"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/root_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <Button
+        android:id="@+id/root_add"
+        style="@style/Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/space_s"
+        android:layout_marginRight="@dimen/space_s"
+        android:layout_marginTop="@dimen/space_xs"
+        android:layout_marginBottom="@dimen/space_xs"
+        android:drawableStart="@drawable/ic_folder_plus"
+        android:drawablePadding="@dimen/space_s"
+        android:text="@string/action_add_folder" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_s"
+        android:paddingBottom="@dimen/space_s">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_key"
+            android:tint="@color/icon"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/Text.Meta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/space_s"
+            android:text="@string/note_roots" />
+    </LinearLayout>
+</LinearLayout>

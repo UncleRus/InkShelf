@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Стили и тема. E-ink: без анимаций, без теней, без ripple, высокий контраст.
+  Платформенная тема Material Light (без AndroidX/AppCompat).
+-->
+<resources>
+
+    <!-- ===== Тема приложения ===== -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:colorPrimary">@color/paper</item>
+        <item name="android:colorPrimaryDark">@color/paper</item>
+        <item name="android:colorAccent">@color/ink</item>
+        <item name="android:colorControlNormal">@color/ink</item>
+        <item name="android:colorControlActivated">@color/ink</item>
+        <item name="android:colorControlHighlight">@android:color/transparent</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:textColorSecondary">@color/ink_secondary</item>
+        <item name="android:textColorHint">@color/input_hint</item>
+        <item name="android:windowNoTitle">true</item>
+        <!-- никаких переходов/анимаций -->
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowActivityTransitions">false</item>
+        <!-- Все AlertDialog приложения рисуются одной темой (см. AppTheme.Dialog). -->
+        <item name="android:alertDialogTheme">@style/AppTheme.Dialog</item>
+    </style>
+
+    <!--
+      Диалог: без платформенной панели. Фон окна прозрачный, панель красит
+      util/Dialogs.java своим drawable bg_dialog (белая, рамка 1dp, радиус 6dp) —
+      иначе платформенный dialog_border_device_default_light даёт толстый контур
+      и тень, не как в макете .dlg.
+    -->
+    <style name="AppTheme.Dialog" parent="@android:style/Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/ink</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <!-- Затемнение фона — как в макете (.overlay rgba(0,0,0,.35)). -->
+        <item name="android:backgroundDimAmount">0.35</item>
+    </style>
+
+    <!-- ===== Текст ===== -->
+    <style name="Text">
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Text.Title" parent="Text">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text.Header" parent="Text">
+        <item name="android:textSize">@dimen/text_header</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Text.Body" parent="Text">
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <style name="Text.Meta" parent="Text">
+        <item name="android:textSize">@dimen/text_meta</item>
+        <item name="android:textColor">@color/ink_secondary</item>
+    </style>
+
+    <style name="Text.Count" parent="Text">
+        <item name="android:textSize">@dimen/text_count</item>
+        <item name="android:textColor">@color/ink_faint</item>
+    </style>
+
+    <style name="Text.Tab" parent="Text">
+        <item name="android:textSize">@dimen/text_tab</item>
+    </style>
+
+    <style name="Text.SectionHeader" parent="Text">
+        <item name="android:textSize">@dimen/text_meta</item>
+        <item name="android:textStyle">bold</item>
+        <!-- Инверсия: светлый текст на чёрной плашке (см. @color/section_bg) -->
+        <item name="android:textColor">@color/paper</item>
+    </style>
+
+    <style name="Text.PlaceholderLetter" parent="Text">
+        <item name="android:textSize">@dimen/text_placeholder</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/placeholder_ink</item>
+    </style>
+
+    <!-- ===== Карточка книги (S3) ===== -->
+    <style name="Card" />
+
+    <style name="Card.Row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">@dimen/space_xs</item>
+        <item name="android:paddingBottom">@dimen/space_xs</item>
+    </style>
+
+    <style name="Card.Key" parent="Text.Count">
+        <item name="android:minWidth">@dimen/card_key_w</item>
+    </style>
+
+    <style name="Card.Value" parent="Text.Body">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingLeft">@dimen/space_m</item>
+    </style>
+
+    <style name="Card.Label" parent="Text.Count">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- ===== Строки и контейнеры ===== -->
+    <style name="Row">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">@dimen/touch_min</item>
+        <item name="android:background">@drawable/sel_row</item>
+        <item name="android:paddingLeft">@dimen/list_pad_h</item>
+        <item name="android:paddingRight">@dimen/list_pad_h</item>
+        <item name="android:paddingTop">@dimen/list_pad_v</item>
+        <item name="android:paddingBottom">@dimen/list_pad_v</item>
+    </style>
+
+    <style name="Row.Dialog" parent="Row">
+        <item name="android:background">@drawable/sel_row_dialog</item>
+    </style>
+
+    <style name="Tab">
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">@dimen/tab_min_h</item>
+        <item name="android:paddingLeft">@dimen/tab_pad_h</item>
+        <item name="android:paddingRight">@dimen/tab_pad_h</item>
+        <item name="android:drawablePadding">@dimen/space_xs</item>
+        <item name="android:background">@drawable/bg_tab</item>
+        <item name="android:textColor">@color/tab_text</item>
+        <item name="android:textSize">@dimen/text_tab</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Button" parent="@android:style/Widget.Material.Button.Borderless">
+        <item name="android:background">@drawable/sel_button</item>
+        <item name="android:textColor">@color/button_ink</item>
+        <item name="android:textSize">@dimen/text_body</item>
+        <item name="android:minHeight">@dimen/button_min_h</item>
+        <item name="android:paddingLeft">@dimen/button_pad_h</item>
+        <item name="android:paddingRight">@dimen/button_pad_h</item>
+        <item name="android:minWidth">@dimen/touch_min</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Badge" parent="Text.Count">
+        <item name="android:background">@drawable/bg_badge</item>
+        <item name="android:paddingLeft">@dimen/space_s</item>
+        <item name="android:paddingRight">@dimen/space_s</item>
+        <item name="android:paddingTop">@dimen/space_xs</item>
+        <item name="android:paddingBottom">@dimen/space_xs</item>
+    </style>
+
+</resources>

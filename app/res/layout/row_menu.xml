@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Пункт меню книги D6 (макет 28) и строка «Открыть в проводнике» в D1
+  (макет 16): иконка + подпись во всю ширину.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Row.Dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/menu_icon"
+        android:layout_width="@dimen/menu_icon"
+        android:layout_height="@dimen/menu_icon"
+        android:tint="@color/ink"
+        android:contentDescription="@null" />
+
+    <TextView
+        android:id="@+id/menu_label"
+        style="@style/Text.Body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/space_m" />
+</LinearLayout>

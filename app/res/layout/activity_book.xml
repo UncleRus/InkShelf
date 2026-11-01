@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S3 «Карточка книги» (UI.md §2, макет 11) + оверлей S8 «Обложка» (макет 24).
+  Сверху вниз: обложка (тап → S8) с названием/авторами, характеристики, аннотация,
+  действия («Открыть», «Открыть в…», «Удалить файл»). NFR-1: текст не обрезается —
+  высота только wrap_content.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Шапка: назад + заголовок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:minHeight="@dimen/tab_min_h"
+            android:paddingLeft="@dimen/space_s"
+            android:paddingRight="@dimen/list_pad_h">
+
+            <ImageButton
+                android:id="@+id/book_back"
+                android:layout_width="@dimen/touch_min"
+                android:layout_height="@dimen/touch_min"
+                android:background="@null"
+                android:src="@drawable/ic_back"
+                android:tint="@color/ink"
+                android:contentDescription="@string/action_up" />
+
+            <TextView
+                style="@style/Text.Title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/space_s"
+                android:text="@string/title_book" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_h"
+            android:background="@color/divider" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/paper"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:scrollbarFadeDuration="0"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbarSize="@dimen/scrollbar_w"
+            android:scrollbarStyle="insideOverlay"
+            android:scrollbarThumbVertical="@drawable/sb_thumb"
+            android:scrollbarTrackVertical="@drawable/sb_track">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/space_l">
+
+                <!-- Обложка + название/авторы -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/list_pad_h"
+                    android:paddingRight="@dimen/list_pad_h"
+                    android:paddingTop="@dimen/space_m"
+                    android:paddingBottom="@dimen/space_m">
+
+                    <FrameLayout
+                        android:id="@+id/book_cover_box"
+                        android:layout_width="@dimen/cover_card_w"
+                        android:layout_height="@dimen/cover_card_h"
+                        android:background="@drawable/bg_letter"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:contentDescription="@string/cd_cover_view">
+
+                        <ImageView
+                            android:id="@+id/book_cover"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:id="@+id/book_cover_letter"
+                            style="@style/Text.PlaceholderLetter"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textSize="44sp" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/space_m"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/book_name"
+                            style="@style/Text.Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingMultiplier="1.1" />
+
+                        <TextView
+                            android:id="@+id/book_author"
+                            style="@style/Text.Meta"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_s"
+                            android:saveEnabled="false" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_h"
+                    android:background="@color/divider" />
+
+                <!-- Характеристики -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/list_pad_h"
+                    android:paddingRight="@dimen/list_pad_h"
+                    android:paddingTop="@dimen/space_s"
+                    android:paddingBottom="@dimen/space_s">
+
+                    <LinearLayout
+                        android:id="@+id/row_authors"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_authors" />
+
+                        <TextView
+                            android:id="@+id/card_authors_val"
+                            style="@style/Card.Value"
+                            android:saveEnabled="false" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_series"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_series" />
+
+                        <TextView
+                            android:id="@+id/card_series_val"
+                            style="@style/Card.Value"
+                            android:saveEnabled="false" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_genres"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_genres" />
+
+                        <TextView
+                            android:id="@+id/card_genres_val"
+                            style="@style/Card.Value"
+                            android:saveEnabled="false" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_format"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_format" />
+
+                        <TextView
+                            android:id="@+id/card_format_val"
+                            style="@style/Card.Value" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_size"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_size" />
+
+                        <TextView
+                            android:id="@+id/card_size_val"
+                            style="@style/Card.Value" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_opened"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_opened_at" />
+
+                        <TextView
+                            android:id="@+id/card_opened_val"
+                            style="@style/Card.Value" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_path"
+                        style="@style/Card.Row">
+
+                        <TextView
+                            style="@style/Card.Key"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/card_path" />
+
+                        <TextView
+                            android:id="@+id/card_path_val"
+                            style="@style/Card.Value" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_h"
+                    android:background="@color/divider" />
+
+                <!-- Аннотация -->
+                <LinearLayout
+                    android:id="@+id/book_annot_block"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/list_pad_h"
+                    android:paddingRight="@dimen/list_pad_h"
+                    android:paddingTop="@dimen/space_s"
+                    android:paddingBottom="@dimen/space_s">
+
+                    <TextView
+                        style="@style/Card.Label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/card_annotation" />
+
+                    <TextView
+                        android:id="@+id/book_annot"
+                        style="@style/Text.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:lineSpacingMultiplier="1.25" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_h"
+                    android:background="@color/divider" />
+
+                <!-- Действия -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/list_pad_h"
+                    android:paddingRight="@dimen/list_pad_h"
+                    android:paddingTop="@dimen/space_m">
+
+                    <Button
+                        android:id="@+id/book_open"
+                        style="@style/Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_book_open"
+                        android:drawableTint="@color/ink"
+                        android:drawablePadding="@dimen/space_s"
+                        android:text="@string/action_open" />
+
+                    <Button
+                        android:id="@+id/book_open_with"
+                        style="@style/Button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="@dimen/space_s"
+                        android:drawableStart="@drawable/ic_share"
+                        android:drawableTint="@color/ink"
+                        android:drawablePadding="@dimen/space_s"
+                        android:text="@string/action_open_with" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/list_pad_h"
+                    android:paddingRight="@dimen/list_pad_h"
+                    android:paddingTop="@dimen/space_s">
+
+                    <Button
+                        android:id="@+id/book_delete"
+                        style="@style/Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_trash"
+                        android:drawableTint="@color/ink"
+                        android:drawablePadding="@dimen/space_s"
+                        android:text="@string/action_delete_file" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <!-- S8 «Обложка»: полноэкранный просмотр, открывается тапом по обложке -->
+    <FrameLayout
+        android:id="@+id/cover_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/paper"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:minHeight="@dimen/tab_min_h"
+                android:paddingLeft="@dimen/space_s"
+                android:paddingRight="@dimen/space_s">
+
+                <ImageButton
+                    android:id="@+id/cover_close"
+                    android:layout_width="@dimen/touch_min"
+                    android:layout_height="@dimen/touch_min"
+                    android:background="@null"
+                    android:src="@drawable/ic_close"
+                    android:tint="@color/ink"
+                    android:contentDescription="@string/action_up" />
+
+                <TextView
+                    style="@style/Text.Title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/title_cover" />
+
+                <View
+                    android:layout_width="@dimen/touch_min"
+                    android:layout_height="@dimen/touch_min" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_h"
+                android:background="@color/divider" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="@dimen/space_m">
+
+                <TextView
+                    android:id="@+id/cover_big_letter"
+                    style="@style/Text.PlaceholderLetter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="96sp" />
+
+                <ImageView
+                    android:id="@+id/cover_big"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/cover_hint"
+                style="@style/Text.Count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="@dimen/space_l"
+                android:paddingRight="@dimen/space_l"
+                android:paddingBottom="@dimen/list_pad_v"
+                android:text="@string/hint_cover_close" />
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

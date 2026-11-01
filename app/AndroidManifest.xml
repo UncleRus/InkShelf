@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Библиотека (ru.unclerus.library) — манифест.
+  Без Gradle, без AndroidX: только платформенные API (minSdk 23, targetSdk 30).
+  Доступ к файлам — MANAGE_EXTERNAL_STORAGE («все файлы»).
+  Провайдер файлов — свой (androidx FileProvider недоступен без AndroidX).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.unclerus.library"
+    android:versionCode="1"
+    android:versionName="0.1.0">
+
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="30" />
+
+    <!-- Все файлы (Android 11+). На API 23–29 хватает обычных storage-разрешений. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Сеть приложению не нужна: интернет-разрешений нет. -->
+
+    <!--
+      Видимость пакетов (Android 11, targetSdk 30): без <queries> PackageManager
+      не показывает чужие приложения — список читалок (D1) и адресный запуск
+      (setPackage) не работали бы. Объявляем известные читалки и сигнатуры
+      ACTION_VIEW для книжных MIME + папки (для «Показать файл в папке»).
+    -->
+    <queries>
+        <package android:name="com.onyx.oreaderx" />
+        <package android:name="com.fbreader" />
+        <package android:name="com.foobnix.pro.pdf.reader" />
+        <package android:name="com.onyx.kreader" />
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="application/fb2+zip" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="application/epub+zip" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="application/x-mobipocket-ebook" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="resource/folder" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".App"
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:theme="@style/AppTheme"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:largeHeap="false"
+        android:supportsRtl="false">
+
+        <!-- S1 Главный -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- S2 Книги группы -->
+        <activity
+            android:name=".ui.GroupBooksActivity"
+            android:exported="false"
+            android:label="@string/title_group" />
+        <!-- S3 Карточка книги -->
+        <activity
+            android:name=".ui.BookActivity"
+            android:exported="false"
+            android:label="@string/title_book" />
+        <!-- S4 Настройки -->
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_settings" />
+        <!-- S9 Папки с книгами -->
+        <activity
+            android:name=".ui.RootsActivity"
+            android:exported="false"
+            android:label="@string/title_root_folders" />
+        <!-- S5 Выбор папки-корня -->
+        <activity
+            android:name=".ui.FolderBrowserActivity"
+            android:exported="false"
+            android:label="@string/title_pick_folder" />
+        <!-- S6 Диагностика -->
+        <activity
+            android:name=".ui.DiagnosticsActivity"
+            android:exported="false"
+            android:label="@string/title_diagnostics" />
+        <!-- S7 О программе -->
+        <activity
+            android:name=".ui.AboutActivity"
+            android:exported="false"
+            android:label="@string/title_about" />
+
+        <!-- Фоновая индексация -->
+        <service
+            android:name=".scan.IndexerService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- Свой файловый провайдер (content:// для читалок). Доступ ограничен
+             активными корнями библиотеки — проверка в коде, не в XML. -->
+        <provider
+            android:name=".file.LibraryFileProvider"
+            android:authorities="ru.unclerus.library.files"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Бегунок постоянного скроллбара карточки книги (S3, макет 11). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/scrollbar_thumb" />
+    <corners android:radius="@dimen/scrollbar_radius" />
+</shape>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S2 «Книги группы» (UI.md §2, макет 10): шапка (назад + название группы),
+  строка сортировки, плоский постраничный список книг. Размер страницы — по
+  высоте экрана и шрифту; свайп-листание. NFR-1: без обрезки строк.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/tab_min_h"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageButton
+            android:id="@+id/gb_back"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/action_up" />
+
+        <TextView
+            android:id="@+id/gb_title"
+            style="@style/Text.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/space_s" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <!-- Строка сортировки: тап → D8 (выбор сортировки). У автора и серии
+         скрывается — там порядок фиксирован (группы по сериям / номер в серии). -->
+    <LinearLayout
+        android:id="@+id/gb_sort_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/gb_sort"
+            style="@style/Text.Count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_banner"
+            android:textColor="@color/banner_ink"
+            android:paddingLeft="@dimen/list_pad_h"
+            android:paddingRight="@dimen/list_pad_h"
+            android:paddingTop="@dimen/space_s"
+            android:paddingBottom="@dimen/space_s" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_h_strong"
+            android:background="@color/ink" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/dither">
+
+        <ListView
+            android:id="@+id/gb_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/divider"
+            android:dividerHeight="@dimen/divider_h"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/gb_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/paper"
+            android:paddingLeft="@dimen/space_xl"
+            android:paddingRight="@dimen/space_xl"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/empty_icon"
+                android:layout_height="@dimen/empty_icon"
+                android:src="@drawable/ic_books"
+                android:tint="@color/ink_faint"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/gb_empty_text"
+                style="@style/Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:gravity="center"
+                android:textColor="@color/ink_secondary" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h_strong"
+        android:background="@color/ink" />
+
+    <LinearLayout
+        android:id="@+id/gb_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/space_s">
+
+        <ImageButton
+            android:id="@+id/gb_pg_first"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron2_left"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_first_page" />
+
+        <ImageButton
+            android:id="@+id/gb_pg_prev"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_prev_page" />
+
+        <TextView
+            android:id="@+id/gb_page_info"
+            style="@style/Text.Count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/ink"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/gb_pg_next"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_next_page" />
+
+        <ImageButton
+            android:id="@+id/gb_pg_last"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron2_right"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_last_page" />
+    </LinearLayout>
+</LinearLayout>

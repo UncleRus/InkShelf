@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Размеры. Правило NFR-1: у текста НЕТ фиксированных высот — только wrap_content.
+  dp применяется только к отбивкам, обложкам и тач-целям; все размеры шрифта — в sp
+  (sp сам масштабируется системой, а мы дополнительно множим через Configuration.fontScale).
+-->
+<resources>
+    <!-- Отбивки -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_s">8dp</dimen>
+    <dimen name="space_m">12dp</dimen>
+    <dimen name="space_l">16dp</dimen>
+    <dimen name="space_xl">24dp</dimen>
+
+    <!-- Тач-цель -->
+    <dimen name="touch_min">48dp</dimen>
+
+    <!-- Строка списка -->
+    <dimen name="list_pad_h">12dp</dimen>
+    <dimen name="list_pad_v">10dp</dimen>
+    <dimen name="row_gap">10dp</dimen>
+    <dimen name="divider_h">1dp</dimen>
+    <dimen name="divider_h_strong">2dp</dimen>
+
+    <!-- Обложки -->
+    <dimen name="cover_w">56dp</dimen>
+    <dimen name="cover_h">84dp</dimen>
+    <dimen name="cover_w_compact">36dp</dimen>
+    <dimen name="cover_h_compact">54dp</dimen>
+    <dimen name="cover_corner">2dp</dimen>
+    <!-- Крупная обложка в карточке книги (S3, макет 11) -->
+    <dimen name="cover_card_w">160dp</dimen>
+    <dimen name="cover_card_h">240dp</dimen>
+    <!-- Подпись и значение строк-характеристик карточки -->
+    <dimen name="card_key_w">80dp</dimen>
+
+    <!-- Постоянный скроллбар карточки книги (S3): дорожка + бегунок -->
+    <dimen name="scrollbar_w">8dp</dimen>
+    <dimen name="scrollbar_radius">4dp</dimen>
+
+    <!-- Вкладки -->
+    <dimen name="tab_min_h">44dp</dimen>
+    <dimen name="tab_more_w">34dp</dimen>
+    <dimen name="tab_pad_h">14dp</dimen>
+    <dimen name="tab_underline">3dp</dimen>
+
+    <!-- Поиск -->
+    <dimen name="search_h">48dp</dimen>
+
+    <!-- Диалоги/кнопки -->
+    <dimen name="dialog_pad">20dp</dimen>
+    <dimen name="button_min_h">44dp</dimen>
+    <dimen name="button_pad_h">18dp</dimen>
+
+    <!-- Список читалок в диалогах D1/D6: значок и радио -->
+    <dimen name="reader_icon">32dp</dimen>
+    <dimen name="reader_radio">22dp</dimen>
+    <dimen name="menu_icon">24dp</dimen>
+
+    <!-- Пустые состояния -->
+    <dimen name="empty_icon">72dp</dimen>
+
+    <!-- Типографика (sp) -->
+    <dimen name="text_xl">22sp</dimen>
+    <dimen name="text_title">18sp</dimen>
+    <dimen name="text_header">16sp</dimen>
+    <dimen name="text_tab">15sp</dimen>
+    <dimen name="text_body">15sp</dimen>
+    <dimen name="text_meta">13sp</dimen>
+    <dimen name="text_count">13sp</dimen>
+    <dimen name="text_placeholder">20sp</dimen>
+</resources>

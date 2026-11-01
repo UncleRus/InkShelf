@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Фон незанятого места в списках: точечный дизеринг малой плотности (решение
+  оператора, макет 25). Тайл 10x10 px (drawable-nodpi — 1:1 к пикселю экрана)
+  повторяется; строки списка непрозрачно белые, поэтому узор виден ТОЛЬКО
+  под последней строкой. Сплошные серые заливки отвергнуты — плохо читаются.
+-->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/dither_dot"
+    android:tileMode="repeat" />

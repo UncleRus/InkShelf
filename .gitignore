@@ -1,0 +1,20 @@
+# Сборочные артефакты
+/build/
+*.apk
+*.idsig
+
+# Сгенерированные макеты (восстанавливаются: python3 design/gen.py && bash design/render.sh)
+/design/out/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE / локальные настройки
+.idea/
+*.iml
+.gradle/
+local.properties
+
+# Ключ подписи и пароль — локальные, в репозиторий не входят
+/signing/

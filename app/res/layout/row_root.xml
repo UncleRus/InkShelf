@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  V9: строка папки с книгами (S9 «Папки с книгами»). Слева — иконка папки
+  (или предупреждения), затем путь и состояние, справа — корзина (D9).
+  Путь и подпись переносятся (NFR-1: без обрезки).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/root_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:tint="@color/icon"
+        android:src="@drawable/ic_folder"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/space_m"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/root_path"
+            style="@style/Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="none" />
+
+        <TextView
+            android:id="@+id/root_sub"
+            style="@style/Text.Count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/root_trash"
+        android:layout_width="@dimen/touch_min"
+        android:layout_height="@dimen/touch_min"
+        android:layout_marginLeft="@dimen/space_s"
+        android:background="@null"
+        android:src="@drawable/ic_trash"
+        android:tint="@color/ink"
+        android:contentDescription="@string/cd_delete_root" />
+</LinearLayout>

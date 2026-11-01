@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <!-- Строка поиска + вход в настройки -->
+    <LinearLayout
+        android:id="@+id/searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_h"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_search"
+            android:tint="@color/ink_faint"
+            android:contentDescription="@string/search_label" />
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/space_s"
+            android:layout_marginRight="@dimen/space_s"
+            android:background="@null"
+            android:hint="@string/search_hint"
+            android:textColorHint="@color/input_hint"
+            android:textColor="@color/ink"
+            android:textSize="@dimen/text_body"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+
+        <!-- Алфавитный указатель: открывает сетку букв D13 (полосы у края списка нет) -->
+        <ImageButton
+            android:id="@+id/btn_alpha"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_list"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_alphabet_index"
+            android:visibility="gone" />
+
+        <!-- Очистить поиск: видна, когда запрос непуст (макет 09) -->
+        <ImageButton
+            android:id="@+id/btn_clear"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_close"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_clear_search"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_settings"
+            android:tint="@color/icon"
+            android:contentDescription="@string/title_settings" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <!-- Вкладки: одна строка с горизонтальной прокруткой. У края, где есть
+         скрытые вкладки, показывается стрелка прокрутки (см. updateTabArrows). -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <HorizontalScrollView
+            android:id="@+id/tab_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <ImageButton
+            android:id="@+id/tab_left"
+            android:layout_width="@dimen/tab_more_w"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="@drawable/bg_tab_more_left"
+            android:src="@drawable/ic_chevron_left"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_tab_scroll_left"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/tab_right"
+            android:layout_width="@dimen/tab_more_w"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:background="@drawable/bg_tab_more_right"
+            android:src="@drawable/ic_chevron"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_tab_scroll_right"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h"
+        android:background="@color/divider" />
+
+    <!-- Область списка: либо список, либо пустое состояние из БД.
+         Фон — точечный дизеринг: виден только под последней строкой (строки
+         непрозрачно белые), заполняет «пустоту» внизу списка. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/dither">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/divider"
+            android:dividerHeight="@dimen/divider_h"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/paper"
+            android:paddingLeft="@dimen/space_xl"
+            android:paddingRight="@dimen/space_xl"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/empty_icon"
+                android:layout_width="@dimen/empty_icon"
+                android:layout_height="@dimen/empty_icon"
+                android:src="@drawable/ic_books"
+                android:tint="@color/ink_faint"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/empty_text"
+                style="@style/Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:gravity="center"
+                android:textColor="@color/ink_secondary" />
+
+            <Button
+                android:id="@+id/empty_btn"
+                style="@style/Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_l"
+                android:visibility="gone" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Строка прогресса индексации (скрыта, когда индексация не идёт) -->
+    <TextView
+        android:id="@+id/scan_footer"
+        style="@style/Text.Count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_s"
+        android:paddingBottom="@dimen/space_s"
+        android:visibility="gone" />
+
+    <!-- «Найдено: N · по названию, авторам, серии» в режиме поиска (макет 09) -->
+    <TextView
+        android:id="@+id/search_footer"
+        style="@style/Text.Count"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/space_s"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_s"
+        android:paddingBottom="@dimen/space_s"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_h_strong"
+        android:background="@color/ink" />
+
+    <!-- Полоса страниц (скрывается, когда показывается пустое состояние) -->
+    <LinearLayout
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/space_s">
+
+        <ImageButton
+            android:id="@+id/pg_first"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron2_left"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_first_page" />
+
+        <ImageButton
+            android:id="@+id/pg_prev"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_prev_page" />
+
+        <TextView
+            android:id="@+id/page_info"
+            style="@style/Text.Count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/ink"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/pg_next"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_next_page" />
+
+        <ImageButton
+            android:id="@+id/pg_last"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_chevron2_right"
+            android:tint="@color/ink"
+            android:contentDescription="@string/cd_last_page" />
+    </LinearLayout>
+</LinearLayout>

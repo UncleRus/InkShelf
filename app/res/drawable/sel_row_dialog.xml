@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Фон строки внутри диалога (D1/D1·b/D6). В списках строки непрозрачно белые
+  (sel_row) — так дизеринг пустого места не просвечивает. В диалоге под строками
+  и так белая панель, а непрозрачный фон перекрывал бы рамку панели (bg_dialog),
+  поэтому здесь фон прозрачный; подсветка нажатия сохранена.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:drawable="@color/row_pressed" />
+    <item android:drawable="@android:color/transparent" />
+</selector>

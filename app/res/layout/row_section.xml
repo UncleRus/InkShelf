@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Заголовок раздела S4 «Настройки» (Библиотека / Чтение / Оформление /
+  Доступ и сервис). Серая плашка с белым текстом — как `.sect` в макете.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/section_letter"
+    style="@style/Text.SectionHeader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_section"
+    android:paddingLeft="@dimen/list_pad_h"
+    android:paddingRight="@dimen/list_pad_h"
+    android:paddingTop="@dimen/space_xs"
+    android:paddingBottom="@dimen/space_xs" />
