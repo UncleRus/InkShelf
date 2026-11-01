@@ -63,7 +63,7 @@
                 android:id="@+id/about_icon"
                 android:layout_width="@dimen/empty_icon"
                 android:layout_height="@dimen/empty_icon"
-                android:src="@drawable/ic_books"
+                android:src="@drawable/ic_bookmark"
                 android:tint="@color/ink"
                 android:contentDescription="@null" />
 

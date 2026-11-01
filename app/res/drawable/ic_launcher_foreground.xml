@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- СГЕНЕРИРОВАНО design/gen.py — правьте ICONS['bookmark'] там, а не этот файл. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:scaleX="2.55" android:scaleY="2.55" android:translateX="23.4" android:translateY="23.4">
+    <path android:pathData="M7 4.4h10a1.2 1.2 0 0 1 1.2 1.2v13.4a1.2 1.2 0 0 1-1.2 1.2H7a1.2 1.2 0 0 1-1.2-1.2V5.6A1.2 1.2 0 0 1 7 4.4z" android:strokeColor="@color/ink" android:strokeWidth="1.9" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000" />
+    <path android:pathData="M9.8 4.4h4.4v7.2l-2.2-1.6-2.2 1.6z" android:fillColor="@color/ink" />
+    </group>
+</vector>

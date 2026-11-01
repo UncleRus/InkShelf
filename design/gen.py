@@ -95,6 +95,12 @@ ICONS = {
     'history': [('c', 12, 12, 8.3), ('p', 'M12 7.4V12l3.1 2')],
     'books': [('p', 'M4.4 4.6h5.4a1 1 0 0 1 1 1v13.8H5.4a1 1 0 0 1-1-1V4.6Z'),
               ('p', 'M19.6 4.6h-5.4a1 1 0 0 0-1 1v13.8h5.4a1 1 0 0 0 1-1V4.6Z')],
+    # Знак приложения (запись бэклога №9): закрытая книга с закладкой.
+    # Отдельный знак — не строчная иконка списка: читается на e-ink в 1-bit,
+    # силуэт держится и в 32 px. Идёт в лаунчер, см. emit_vectors().
+    'bookmark': [('p', 'M7 4.4h10a1.2 1.2 0 0 1 1.2 1.2v13.4a1.2 1.2 0 0 1-1.2 1.2H7'
+                       'a1.2 1.2 0 0 1-1.2-1.2V5.6A1.2 1.2 0 0 1 7 4.4z'),
+                 ('pf', 'M9.8 4.4h4.4v7.2l-2.2-1.6-2.2 1.6z')],
     # --- навигация и служебное ---
     'search': [('c', 10.8, 10.8, 6.2), ('p', 'M15.4 15.4 20.3 20.3')],
     'close': [('p', 'M6.6 6.6 17.4 17.4'), ('p', 'M17.4 6.6 6.6 17.4')],
@@ -1285,7 +1291,7 @@ def s14_diagnostics():
 def s15_about():
     return (STATUS + topbar(tr('title_about')) +
             '<div class="center" style="justify-content:flex-start;padding-top:%dpx">' % dp(40) +
-            svg_icon('books', dp(72), C['ink']) +
+            svg_icon('bookmark', dp(72), C['ink']) +
             '<div style="%s;font-weight:700">%s</div>' % (t('xl'), esc(tr('app_name'))) +
             '<div style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(6), esc(tr('app_tagline'))) +
@@ -1651,25 +1657,78 @@ def emit_vectors():
             fh.write(xml)
         written.append(path)
 
-    # иконка лаунчера: подложка + знак «книги» (иначе Android покажет голый штрих)
-    glyph = '\n'.join(
-        '    <path android:pathData="%s" android:strokeColor="@color/ink" android:strokeWidth="1.9" '
-        'android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000" />' % d
-        for d in [elems[1] for elems in ICONS['books']])
-    xml = ('<?xml version="1.0" encoding="utf-8"?>\n'
-           '<!-- СГЕНЕРИРОВАНО design/gen.py -->\n'
+    # --- иконка приложения (запись бэклога №9) ---------------------------
+    # Знак «закрытая книга с закладкой» лежит в ICONS['bookmark'] (24dp,
+    # штрих 1.9). Готовим набор ресурсов с единым весом штриха: 24dp-глиф
+    # показывается примерно на 40dp, как остальные иконки набора.
+    #   mipmap-anydpi/ic_launcher.xml        — legacy (API < 26): белый квадрат 48dp;
+    #   mipmap-anydpi-v26/ic_launcher*.xml   — adaptive: белый фон + передний план;
+    #   drawable/ic_launcher_foreground.xml  — знак в безопасной зоне 108dp.
+    def _sign(indent, color):
+        """Разметка знака приложения: обводка и заливка (закладка) в один цвет."""
+        out = []
+        for el in ICONS['bookmark']:
+            if el[0] == 'p':
+                out.append('%s<path android:pathData="%s" android:strokeColor="%s" '
+                           'android:strokeWidth="%s" android:strokeLineCap="round" '
+                           'android:strokeLineJoin="round" android:fillColor="#00000000" />'
+                           % (indent, el[1], color, STROKE))
+            elif el[0] == 'pf':
+                out.append('%s<path android:pathData="%s" android:fillColor="%s" />'
+                           % (indent, el[1], color))
+        return '\n'.join(out)
+
+    head = ('<?xml version="1.0" encoding="utf-8"?>\n'
+            '<!-- СГЕНЕРИРОВАНО design/gen.py — правьте ICONS[\'bookmark\'] там, а не этот файл. -->\n')
+
+    # legacy: 48dp, белый квадрат, знак scale 1.7 (offset (48-40.8)/2 = 3.6)
+    xml = (head +
            '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
            '    android:width="48dp" android:height="48dp"\n'
            '    android:viewportWidth="48" android:viewportHeight="48">\n'
            '    <path android:pathData="M0 0h48v48H0z" android:fillColor="#FFFFFFFF" />\n'
-           '    <group android:scaleX="1.7" android:scaleY="1.7" android:translateX="3.6" android:translateY="3.6">\n'
-           '    <path android:pathData="M14.4 2.6h4.2a1 1 0 0 1 1 1v17.8h-5.2V2.6Z" '
-           'android:strokeColor="@color/ink" android:strokeWidth="1.9" android:fillColor="#00000000" />\n'
-           + glyph + '\n    </group>\n</vector>\n')
-    path = os.path.join(dr, 'ic_launcher.xml')
-    with open(path, 'w', encoding='utf-8') as fh:
+           '    <group android:scaleX="1.7" android:scaleY="1.7" '
+           'android:translateX="3.6" android:translateY="3.6">\n'
+           + _sign('    ', '@color/ink') + '\n    </group>\n</vector>\n')
+    legacy = os.path.join(APP, 'res', 'mipmap-anydpi', 'ic_launcher.xml')
+    os.makedirs(os.path.dirname(legacy), exist_ok=True)
+    with open(legacy, 'w', encoding='utf-8') as fh:
         fh.write(xml)
-    written.append(path)
+    written.append(legacy)
+
+    # передний план adaptive: 108dp, знак scale 2.55 (24*2.55 = 61.2; offset 23.4).
+    # Знак целиком лежит в безопасной зоне 66dp — ни одна маска его не срежет.
+    xml = (head +
+           '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
+           '    android:width="108dp" android:height="108dp"\n'
+           '    android:viewportWidth="108" android:viewportHeight="108">\n'
+           '    <group android:scaleX="2.55" android:scaleY="2.55" '
+           'android:translateX="23.4" android:translateY="23.4">\n'
+           + _sign('    ', '@color/ink') + '\n    </group>\n</vector>\n')
+    fg = os.path.join(dr, 'ic_launcher_foreground.xml')
+    with open(fg, 'w', encoding='utf-8') as fh:
+        fh.write(xml)
+    written.append(fg)
+
+    # adaptive-иконка: белая бумага + знак чернилами. Один файл на оба имени —
+    # ic_launcher (квадратная маска) и ic_launcher_round (круглая маска).
+    adaptive = (head +
+                '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+                '    <background android:drawable="@color/paper" />\n'
+                '    <foreground android:drawable="@drawable/ic_launcher_foreground" />\n'
+                '</adaptive-icon>\n')
+    for name in ('ic_launcher', 'ic_launcher_round'):
+        p = os.path.join(APP, 'res', 'mipmap-anydpi-v26', name + '.xml')
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        with open(p, 'w', encoding='utf-8') as fh:
+            fh.write(adaptive)
+        written.append(p)
+
+    # старый одиночный drawable/ic_launcher.xml больше не нужен — убираем,
+    # чтобы не оставалось двух источников знака.
+    stale = os.path.join(dr, 'ic_launcher.xml')
+    if os.path.exists(stale):
+        os.remove(stale)
     return written
 
 
