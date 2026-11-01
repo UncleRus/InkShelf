@@ -86,6 +86,12 @@ def cold_start(adb, runs):
         adb.logcat_clear()
         out = adb.start_w()
         m = re.search(r"TotalTime:\s*(\d+)", out)
+        if not m:
+            # Первый am start после force-stop иногда не отдаёт TotalTime
+            # (активность уже поднимается/задача возвращается на передний план).
+            time.sleep(1.0)
+            out = adb.start_w()
+            m = re.search(r"TotalTime:\s*(\d+)", out)
         total = int(m.group(1)) if m else -1
         time.sleep(1.5)
         logs = adb.logcat()
