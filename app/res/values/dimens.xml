@@ -56,6 +56,12 @@
     <dimen name="reader_icon">32dp</dimen>
     <dimen name="reader_radio">22dp</dimen>
     <dimen name="menu_icon">24dp</dimen>
+    <!-- S6 «Диагностика»: иконка заголовка секции (svg_icon dp(16) в макете) -->
+    <dimen name="diag_label_icon">16dp</dimen>
+    <!-- S6: колонка ключей. В исходном макете было 150px (80dp) — имена полей
+         дробились на строки (правка оператора); 240dp = длина «Авторов /
+         жанров / серий» одной строкой. -->
+    <dimen name="diag_key_w">240dp</dimen>
 
     <!-- Пустые состояния -->
     <dimen name="empty_icon">72dp</dimen>

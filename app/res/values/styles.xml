@@ -124,6 +124,81 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <!-- ===== S6 «Диагностика» (макет 14) =====
+         Метрики из design/gen.py: .block{padding:12dp; border-top 1px divider},
+         .lbl{meta 13sp, bold, caps, разрядка 1px ≈ 0.04em, #777, иконка 16dp, gap 4dp},
+         .kv{padding 4dp 0; gap 8dp}, .kv .k{#777}, .kv .v{#000, flex 1}.
+         Колонка ключей в S6 шире карточной (150px из макета мало — имена
+         дробились на строки, правка оператора): diag_key_w = 240dp, в макете
+         это правило .kv.dk .k{flex-basis:450px}. -->
+
+    <style name="Diag" />
+
+    <!-- Разделитель над секцией (в CSS это border-top у .block). -->
+    <style name="Diag.Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_h</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <style name="Diag.Block">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/paper</item>
+        <item name="android:paddingLeft">@dimen/space_m</item>
+        <item name="android:paddingRight">@dimen/space_m</item>
+        <item name="android:paddingTop">@dimen/space_m</item>
+        <item name="android:paddingBottom">@dimen/space_m</item>
+    </style>
+
+    <style name="Diag.Label">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Diag.LabelIcon">
+        <item name="android:layout_width">@dimen/diag_label_icon</item>
+        <item name="android:layout_height">@dimen/diag_label_icon</item>
+        <item name="android:tint">@color/ink_faint</item>
+        <item name="android:contentDescription">@null</item>
+    </style>
+
+    <style name="Diag.LabelText" parent="Text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/space_xs</item>
+        <item name="android:textSize">@dimen/text_meta</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/ink_faint</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <style name="Diag.Row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">@dimen/space_xs</item>
+        <item name="android:paddingBottom">@dimen/space_xs</item>
+    </style>
+
+    <style name="Diag.Key" parent="Text.Body">
+        <item name="android:layout_width">@dimen/diag_key_w</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ink_faint</item>
+    </style>
+
+    <style name="Diag.Value" parent="Text.Body">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginLeft">@dimen/space_s</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
     <!-- ===== Строки и контейнеры ===== -->
     <style name="Row">
         <item name="android:orientation">horizontal</item>

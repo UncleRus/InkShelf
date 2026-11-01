@@ -335,9 +335,15 @@ S_ = {
     'blk_roots':       ('diag_roots', 'Папки с книгами', 'Book folders'),
     'roots_available': ('diag_root_available', '%1$s · доступен', '%1$s · available'),
     'blk_readers':     ('diag_readers', 'Читалки', 'Readers'),
-    'k_readers_found': ('diag_readers_found', 'Найдено', 'Found'),
+
     'btn_copy_report': ('action_copy_report', 'Скопировать отчёт', 'Copy report'),
     'btn_export_logs': ('action_export_logs', 'Выгрузить логи', 'Export logs'),
+    'toast_report_copied': ('toast_report_copied', 'Отчёт скопирован', 'Report copied'),
+    'toast_report_failed': ('toast_report_failed', 'Не удалось получить отчёт',
+                            "Couldn't get the report"),
+    'toast_logs_exported': ('toast_logs_exported', 'Логи выгружены: %1$s', 'Logs exported: %1$s'),
+    'toast_logs_failed': ('toast_logs_failed', 'Не удалось выгрузить логи',
+                          "Couldn't export logs"),
     # --- S7 о программе ---
     'title_about':     ('title_about', 'О программе', 'About'),
     'about_version':   ('about_version', 'версия %1$s', 'version %1$s'),
@@ -639,6 +645,9 @@ html,body{background:#7d7d7d;font-family:"Noto Sans","DejaVu Sans",sans-serif}
 .cvhint{flex:0 0 auto;text-align:center;%(tmeta)s;color:%(faint)s;padding:%(pv)dpx}
 .kv{display:flex;gap:%(sm)dpx;padding:%(xs)dpx 0;%(tbody)s}
 .kv .k{color:%(faint)s;flex:0 0 150px}
+/* S6 «Диагностика»: колонка ключей шире — имена полей не дробятся на строки
+   (правка оператора: 150px оказалось мало). */
+.kv.dk .k{flex-basis:%(dkw)dpx}
 .kv .v{color:%(ink)s;flex:1}
 /* Ссылка на классификатор в карточке: тап открывает список автора/жанра/серии. */
 .lnk{text-decoration:underline;text-underline-offset:4px}
@@ -666,6 +675,7 @@ html,body{background:#7d7d7d;font-family:"Noto Sans","DejaVu Sans",sans-serif}
     banner=C['banner'], bannerink=C['bannerink'],
     btn=C['btn'], btnb=C['btnb'], disabled=C['disabled'],
     SH=STATUS_H, phx=PAD_H, pv=PAD_V, touch=TOUCH, sm=dp(8), ss=dp(4), m=dp(12), xs=dp(4), xl=dp(24),
+    dkw=dp(240),
     search=SEARCH_H, tabh=TAB_H, tabph=TAB_PH, tabmore=dp(34), gap=GAP, lead=dp(28),
     cw=COVER_W, ch=COVER_H, cwc=COVER_WC, chc=COVER_HC, cwbig=dp(160), chbig=dp(240),
     cwview=dp(500), chview=dp(750),
@@ -1260,7 +1270,8 @@ def s13_folder_picker():
 
 def s14_diagnostics():
     def kv(k, v):
-        return '<div class="kv"><div class="k">%s</div><div class="v">%s</div></div>' % (k, v)
+        return ('<div class="kv dk"><div class="k">%s</div>'
+                '<div class="v">%s</div></div>' % (k, v))
 
     def blk(ico, title):
         return ('<div class="block"><div class="lbl">%s%s</div>'
@@ -1282,7 +1293,9 @@ def s14_diagnostics():
             kv('/storage/6D4A-1E15/Books', fmt(avail, num(597))) +
             kv('/storage/emulated/0/Books', fmt(avail, num(80))) + '</div>' +
             blk('book_open', tr('blk_readers')) +
-            kv(tr('k_readers_found'), '%s: %s' % (num(4), ', '.join(r for r, _ in READERS))) +
+            # Список читалок — по одной на строку, счётчик не нужен
+            # (правка оператора).
+            ''.join(kv('', r) for r, _ in READERS) +
             '</div></div>' +
             '<div class="actions"><div class="btn">%s%s</div><div class="btn">%s%s</div></div>'
             % (svg_icon('copy', dp(20), C['ink']), tr('btn_copy_report'),

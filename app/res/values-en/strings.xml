@@ -74,7 +74,6 @@
     <string name="diag_index">Index</string>
     <string name="diag_model">Model</string>
     <string name="diag_readers">Readers</string>
-    <string name="diag_readers_found">Found</string>
     <string name="diag_root_available">%1$s · available</string>
     <string name="diag_roots">Book folders</string>
     <string name="diag_total_books">Total books</string>
@@ -194,6 +193,10 @@ Add a folder with books.</string>
     <string name="toast_first_page">This is the first page</string>
     <string name="toast_index_updated">Index updated</string>
     <string name="toast_last_page">This is the last page</string>
+    <string name="toast_logs_exported">Logs exported: %1$s</string>
+    <string name="toast_logs_failed">Couldn\'t export logs</string>
+    <string name="toast_report_copied">Report copied</string>
+    <string name="toast_report_failed">Couldn\'t get the report</string>
     <string name="toast_root_added">Folder added</string>
     <string name="toast_scan_started">Scan started</string>
     <string name="value_mb">%1$s MB</string>

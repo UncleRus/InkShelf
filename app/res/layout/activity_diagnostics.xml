@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S6 «Диагностика» (макет 14): четыре секции «ключ → значение» с иконкой и
+  заголовком (УСТРОЙСТВО / ИНДЕКС / ПАПКИ С КНИГАМИ / ЧИТАЛКИ), незанятое место
+  под точечным дизерингом, внизу две кнопки в ряд. Отдельная разметка вместо
+  заглушки BaseActivity (бэклог №11).
+
+  Метрики — из design/gen.py: .block{padding:12dp 12dp; border-top},
+  .lbl{meta 13sp, bold, caps, разрядка 1px, цвет #777, иконка 16dp},
+  .kv{padding 4dp 0; gap 8dp}, .kv .k{цвет #777}, .kv .v{цвет #000, тянется},
+  .actions{padding 12dp; gap 8dp; border-top}. Колонка ключей в S6 — 240dp
+  (diag_key_w): в исходном макете было 80dp, имена полей дробились на строки.
+  NFR-1: у текста только wrap_content — длинное значение переносится и не
+  обрезается (как путь корня в две строки).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/paper">
+
+    <!-- Верхняя панель: «назад» + заголовок -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/tab_min_h"
+        android:paddingLeft="@dimen/space_s"
+        android:paddingRight="@dimen/list_pad_h">
+
+        <ImageButton
+            android:id="@+id/diag_back"
+            android:layout_width="@dimen/touch_min"
+            android:layout_height="@dimen/touch_min"
+            android:background="@null"
+            android:src="@drawable/ic_back"
+            android:tint="@color/ink"
+            android:contentDescription="@string/action_up" />
+
+        <TextView
+            android:id="@+id/diag_title"
+            style="@style/Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/space_s"
+            android:text="@string/title_diagnostics" />
+    </LinearLayout>
+
+    <View style="@style/Diag.Divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/dither"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ===== УСТРОЙСТВО ===== -->
+            <LinearLayout style="@style/Diag.Block">
+
+                <LinearLayout style="@style/Diag.Label">
+
+                    <ImageView
+                        style="@style/Diag.LabelIcon"
+                        android:src="@drawable/ic_info" />
+
+                    <TextView
+                        style="@style/Diag.LabelText"
+                        android:text="@string/diag_device" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_model" />
+
+                    <TextView
+                        android:id="@+id/diag_model_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_android" />
+
+                    <TextView
+                        android:id="@+id/diag_android_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_app_version" />
+
+                    <TextView
+                        android:id="@+id/diag_version_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/Diag.Divider" />
+
+            <!-- ===== ИНДЕКС ===== -->
+            <LinearLayout style="@style/Diag.Block">
+
+                <LinearLayout style="@style/Diag.Label">
+
+                    <ImageView
+                        style="@style/Diag.LabelIcon"
+                        android:src="@drawable/ic_database" />
+
+                    <TextView
+                        style="@style/Diag.LabelText"
+                        android:text="@string/diag_index" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_total_books" />
+
+                    <TextView
+                        android:id="@+id/diag_books_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_authors_genres_series" />
+
+                    <TextView
+                        android:id="@+id/diag_agr_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_without_metadata" />
+
+                    <TextView
+                        android:id="@+id/diag_nometa_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_unavailable" />
+
+                    <TextView
+                        android:id="@+id/diag_missing_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Diag.Row">
+
+                    <TextView
+                        style="@style/Diag.Key"
+                        android:text="@string/diag_covers_cached" />
+
+                    <TextView
+                        android:id="@+id/diag_covers_value"
+                        style="@style/Diag.Value"
+                        android:saveEnabled="false" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View style="@style/Diag.Divider" />
+
+            <!-- ===== ПАПКИ С КНИГАМИ ===== -->
+            <LinearLayout style="@style/Diag.Block">
+
+                <LinearLayout style="@style/Diag.Label">
+
+                    <ImageView
+                        style="@style/Diag.LabelIcon"
+                        android:src="@drawable/ic_folder" />
+
+                    <TextView
+                        style="@style/Diag.LabelText"
+                        android:text="@string/diag_roots" />
+                </LinearLayout>
+
+                <!-- Корней столько, сколько в БД: строки добавляет код
+                     (row_diag_kv.xml). -->
+                <LinearLayout
+                    android:id="@+id/diag_roots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+
+            <View style="@style/Diag.Divider" />
+
+            <!-- ===== ЧИТАЛКИ ===== -->
+            <LinearLayout style="@style/Diag.Block">
+
+                <LinearLayout style="@style/Diag.Label">
+
+                    <ImageView
+                        style="@style/Diag.LabelIcon"
+                        android:src="@drawable/ic_book_open" />
+
+                    <TextView
+                        style="@style/Diag.LabelText"
+                        android:text="@string/diag_readers" />
+                </LinearLayout>
+
+                <!-- Названия читалок — по одному на строку (row_diag_kv.xml
+                     с пустым ключом). Счётчик не показываем: число строк и
+                     есть число читалок (правка оператора). -->
+                <LinearLayout
+                    android:id="@+id/diag_readers_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Две кнопки в ряд (`.actions`: border-top, gap 8dp, кнопки равные) -->
+    <View style="@style/Diag.Divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/paper"
+        android:paddingLeft="@dimen/list_pad_h"
+        android:paddingRight="@dimen/list_pad_h"
+        android:paddingTop="@dimen/space_m"
+        android:paddingBottom="@dimen/space_m">
+
+        <Button
+            android:id="@+id/diag_copy"
+            style="@style/Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableStart="@drawable/ic_copy"
+            android:drawableTint="@color/ink"
+            android:drawablePadding="@dimen/space_xs"
+            android:text="@string/action_copy_report" />
+
+        <Button
+            android:id="@+id/diag_logs"
+            style="@style/Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/space_s"
+            android:drawableStart="@drawable/ic_download"
+            android:drawableTint="@color/ink"
+            android:drawablePadding="@dimen/space_xs"
+            android:text="@string/action_export_logs" />
+    </LinearLayout>
+</LinearLayout>

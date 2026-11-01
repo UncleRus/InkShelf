@@ -74,7 +74,6 @@
     <string name="diag_index">Индекс</string>
     <string name="diag_model">Модель</string>
     <string name="diag_readers">Читалки</string>
-    <string name="diag_readers_found">Найдено</string>
     <string name="diag_root_available">%1$s · доступен</string>
     <string name="diag_roots">Папки с книгами</string>
     <string name="diag_total_books">Всего книг</string>
@@ -194,6 +193,10 @@
     <string name="toast_first_page">Это первая страница</string>
     <string name="toast_index_updated">Индекс обновлён</string>
     <string name="toast_last_page">Это последняя страница</string>
+    <string name="toast_logs_exported">Логи выгружены: %1$s</string>
+    <string name="toast_logs_failed">Не удалось выгрузить логи</string>
+    <string name="toast_report_copied">Отчёт скопирован</string>
+    <string name="toast_report_failed">Не удалось получить отчёт</string>
     <string name="toast_root_added">Папка добавлена</string>
     <string name="toast_scan_started">Индексация запущена</string>
     <string name="value_mb">%1$s МБ</string>
