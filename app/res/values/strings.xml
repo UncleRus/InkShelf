@@ -167,6 +167,7 @@
     <string name="sort_by_title">по названию</string>
     <string name="state_history_empty">Откройте любую книгу</string>
     <string name="state_index_empty">Библиотека ещё не проиндексирована.</string>
+    <string name="state_indexing">Идёт индексация…</string>
     <string name="state_loading">Загрузка…</string>
     <string name="state_no_file_manager">Нет приложения-проводника</string>
     <string name="state_no_reader">Нет приложения, чтобы открыть файл</string>

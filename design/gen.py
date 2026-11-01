@@ -223,6 +223,7 @@ S_ = {
     'btn_add_folder':  ('action_add_folder', 'Добавить папку', 'Add folder'),
     'st_index_empty':  ('state_index_empty', 'Библиотека ещё не проиндексирована.',
                         'The library is not indexed yet.'),
+    'st_indexing':     ('state_indexing', 'Идёт индексация…', 'Indexing…'),
     'btn_start_scan':  ('action_start_scan', 'Начать сканирование', 'Start scanning'),
     'st_nothing_found': ('state_nothing_found', 'Ничего не найдено', 'Nothing found'),
     'st_history_empty': ('state_history_empty', 'Откройте любую книгу', 'Open any book'),

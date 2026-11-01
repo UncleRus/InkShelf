@@ -521,8 +521,8 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
                 return;
             }
             if (books == 0) {
-                showEmpty(R.string.state_index_empty, R.drawable.ic_refresh,
-                        R.string.action_start_scan, ACTION_SCAN);
+                // ST2: кнопка запуска — только если скан не идёт (баг №8).
+                showIndexEmpty();
                 return;
             }
         }
@@ -1220,6 +1220,21 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         mSearchFooter.setVisibility(View.GONE);
     }
 
+    /**
+     * ST2 «индекс не построен»: кнопка запуска показывается, только если скан
+     * ещё не идёт. Пока индексация в процессе, книг в БД ещё 0 — показываем
+     * «Идёт индексация…» без действия, иначе кнопка предлагала бы запустить
+     * второй скан поверх текущего (баг №8).
+     */
+    private void showIndexEmpty() {
+        if (ProgressBus.isRunning()) {
+            showEmpty(R.string.state_indexing, R.drawable.ic_refresh, 0, ACTION_NONE);
+        } else {
+            showEmpty(R.string.state_index_empty, R.drawable.ic_refresh,
+                    R.string.action_start_scan, ACTION_SCAN);
+        }
+    }
+
     private void showList() {
         mAction = ACTION_NONE;
         mEmpty.setVisibility(View.GONE);
@@ -1237,6 +1252,9 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     }
 
     private void startScan() {
+        if (ProgressBus.isRunning()) {
+            return; // скан уже идёт — второй не стартуем (баг №8)
+        }
         Intent i = new Intent(this, IndexerService.class).setAction(IndexerService.ACTION_START);
         startService(i);
     }
@@ -1345,24 +1363,35 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     @Override
     public void onProgress(ProgressBus.Progress p) {
         if (p.isRunning()) {
-            mScanActive = true;
+            if (!mScanActive) {
+                mScanActive = true;
+                // Скан стартовал: если на экране ST2 с кнопкой запуска — убрать
+                // кнопку, оставить только признак индексации (баг №8).
+                if (mEmpty.getVisibility() == View.VISIBLE && mAction == ACTION_SCAN) {
+                    showIndexEmpty();
+                }
+            }
             mScanFooter.setVisibility(View.VISIBLE);
             mScanFooter.setText(getString(R.string.scan_progress_footer,
                     String.valueOf(p.scanned), String.valueOf(p.found), String.valueOf(p.added)));
             return;
         }
         mScanFooter.setVisibility(View.GONE);
-        if (p.phase == ProgressBus.PHASE_DONE && mScanActive) {
-            mScanActive = false;
-            Toast.makeText(this, R.string.toast_index_updated, Toast.LENGTH_SHORT).show();
-            updateBanner();
-            refresh();
-        } else if (p.phase == ProgressBus.PHASE_ERROR) {
+        if (p.phase == ProgressBus.PHASE_ERROR) {
             mScanActive = false;
             mScanFooter.setText(p.error == null ? "" : p.error);
             mScanFooter.setVisibility(View.VISIBLE);
-        } else {
+            refresh(); // вернуть ST2 с кнопкой, если книг всё ещё 0
+            return;
+        }
+        if (mScanActive) {
             mScanActive = false;
+            if (p.phase == ProgressBus.PHASE_DONE) {
+                Toast.makeText(this, R.string.toast_index_updated, Toast.LENGTH_SHORT).show();
+            }
+            updateBanner();
+            // DONE/CANCELLED: пересчитать состояние — список либо ST2 с кнопкой.
+            refresh();
         }
     }
 }

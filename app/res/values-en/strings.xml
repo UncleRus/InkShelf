@@ -167,6 +167,7 @@
     <string name="sort_by_title">by title</string>
     <string name="state_history_empty">Open any book</string>
     <string name="state_index_empty">The library is not indexed yet.</string>
+    <string name="state_indexing">Indexing…</string>
     <string name="state_loading">Loading…</string>
     <string name="state_no_file_manager">No file manager app</string>
     <string name="state_no_reader">No app to open this file</string>
