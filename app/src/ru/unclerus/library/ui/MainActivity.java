@@ -293,6 +293,17 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
             public void onSwipeBack() {
                 swipePage(-1);
             }
+
+            // Горизонталь (BACKLOG №12): соседняя вкладка, а не страница.
+            @Override
+            public void onSwipeTabForward() {
+                swipeTab(1);
+            }
+
+            @Override
+            public void onSwipeTabBack() {
+                swipeTab(-1);
+            }
         });
 
         // Размер страницы зависит от высоты области списка — узнаём её, когда
@@ -808,6 +819,16 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         }
         mPage = target;
         renderPage();
+    }
+
+    /**
+     * Горизонтальный свайп — соседняя вкладка (BACKLOG №12): тот же полный
+     * путь, что тап по вкладке (выход из поиска, сброс страницы, память
+     * вкладки в {@code Prefs}). Циклически: от последней к первой и обратно.
+     */
+    private void swipeTab(int delta) {
+        int n = TAB_LABELS.length;
+        showTab(((mTab + delta) % n + n) % n);
     }
 
     /** Разметка строки-элемента вкладки (для метрик и адаптера). */

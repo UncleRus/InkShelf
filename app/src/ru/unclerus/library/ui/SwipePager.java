@@ -6,12 +6,18 @@ import android.view.View;
 import android.widget.ListView;
 
 /**
- * Листание страниц свайпом (PLAN §6.7, UI.md §5.2). Горизонтальный свайп:
- * справа налево — вперёд, слева направо — назад (как в обычных читалках).
- * Вертикальный свайп (номер 2 в {@code BACKLOG.md}) листает так же: вверх —
- * вперёд, вниз — назад. Страница списка подобрана по высоте экрана (см.
- * {@link ListMetrics}/{@link PagePlan}), поэтому собственная прокрутка списка
- * не нужна и вертикальный жест безопасно отдать листанию.
+ * Жесты свайпа по списку (PLAN §6.7, BACKLOG №2/№12). Оси разделены:
+ * <ul>
+ *   <li>вертикальный — листание страниц: вверх — вперёд, вниз — назад
+ *       (страница подобрана по высоте экрана, см. {@link ListMetrics}/
+ *       {@link PagePlan}, поэтому собственной прокрутки списку не нужно);</li>
+ *   <li>горизонтальный — по умолчанию тоже листание (экраны без вкладок,
+ *       например S2 «Книги группы»); экраны с нижним баром вкладок переопределяют
+ *       {@link Target#onSwipeTabBack()}/{@link Target#onSwipeTabForward()}
+ *       под переключение вкладок (S1).</li>
+ * </ul>
+ * При диагональном жесте доминирует горизонталь — так случайный диагональный
+ * свайп идёт во вкладки, а не «уезжает» в листание по вертикали.
  */
 public final class SwipePager {
 
@@ -20,6 +26,19 @@ public final class SwipePager {
         void onSwipeForward();
 
         void onSwipeBack();
+
+        /**
+         * Горизонтальный свайп «влево» (палец справа налево). По умолчанию —
+         * то же, что листание вперёд: на экранах без вкладок поведение не меняется.
+         */
+        default void onSwipeTabForward() {
+            onSwipeForward();
+        }
+
+        /** Горизонтальный свайп «вправо» (палец слева направо). */
+        default void onSwipeTabBack() {
+            onSwipeBack();
+        }
     }
 
     private SwipePager() {}
@@ -45,9 +64,9 @@ public final class SwipePager {
                         // «уезжает» в листание по вертикали.
                         if (Math.abs(dx) >= slop && Math.abs(dx) > Math.abs(dy)) {
                             if (dx > 0) {
-                                target.onSwipeBack();
+                                target.onSwipeTabBack();
                             } else {
-                                target.onSwipeForward();
+                                target.onSwipeTabForward();
                             }
                             return true;
                         }
