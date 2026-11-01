@@ -91,13 +91,26 @@ public final class Prefs {
         mSp.edit().putBoolean(K_SHOW_COVERS, v).apply();
     }
 
-    // --- размер кэша обложек, МБ (S4.6) ---
+    // --- размер кэша обложек, МБ (S4.6/S4.7): только 64/128/256/512 ---
+    /** Допустимые размеры дискового кэша обложек, МБ (S4.7). */
+    public static final int[] COVER_CACHE_MB = {64, 128, 256, 512};
+
     public int coverCacheMb() {
-        return mSp.getInt(K_COVER_CACHE_MB, DEFAULT_COVER_CACHE_MB);
+        return normalizeCacheMb(mSp.getInt(K_COVER_CACHE_MB, DEFAULT_COVER_CACHE_MB));
     }
 
     public void setCoverCacheMb(int mb) {
-        mSp.edit().putInt(K_COVER_CACHE_MB, mb).apply();
+        mSp.edit().putInt(K_COVER_CACHE_MB, normalizeCacheMb(mb)).apply();
+    }
+
+    /** Привести значение к одному из допустимых (S4.7); неизвестное — к значению по умолчанию. */
+    private static int normalizeCacheMb(int mb) {
+        for (int i = 0; i < COVER_CACHE_MB.length; i++) {
+            if (COVER_CACHE_MB[i] == mb) {
+                return mb;
+            }
+        }
+        return DEFAULT_COVER_CACHE_MB;
     }
 
     // --- режимы сортировки (S1.6 и S2): помнятся между запусками ---

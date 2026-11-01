@@ -299,6 +299,7 @@ public final class GroupBooksActivity extends ThemedActivity {
         if (mPlan == null) {
             int layout = BookRowAdapter.rowLayout(this);
             int itemH = ListMetrics.rowHeight(this, layout);
+            int divider = mList.getDividerHeight();
             if (mGrouped) {
                 if (mSections == null) {
                     try {
@@ -309,9 +310,10 @@ public final class GroupBooksActivity extends ThemedActivity {
                     }
                 }
                 int headerH = ListMetrics.rowHeight(this, R.layout.row_section);
-                mPlan = PagePlan.grouped(mTotal, mSections, mViewport, headerH, itemH);
+                mPlan = PagePlan.grouped(mTotal, mSections, mViewport, headerH, itemH, divider);
             } else {
-                mPlan = PagePlan.flat(mTotal, ListMetrics.perPage(this, mViewport, layout));
+                mPlan = PagePlan.flat(mTotal,
+                        ListMetrics.perPage(this, mViewport, layout, divider));
             }
         }
         int pages = mPlan.pageCount();

@@ -47,11 +47,31 @@ public final class PagePlan {
      */
     public static PagePlan grouped(int total, Sections sections, int viewport,
                                    int headerH, int itemH) {
+        return grouped(total, sections, viewport, headerH, itemH, 0);
+    }
+
+    /**
+     * Группированный список: страница набирается из заголовков и элементов.
+     *
+     * @param sections  разделы списка (не {@code null} и непустой)
+     * @param viewport  высота области списка, px
+     * @param headerH   высота строки-заголовка, px
+     * @param itemH     высота строки-элемента, px (номинальная, по разметке)
+     * @param dividerH  высота разделителя между строками, px (номер 4 в
+     *                  {@code BACKLOG.md}); строки занимают {@code sum + (n-1)*divider},
+     *                  поэтому бюджет берётся как {@code viewport + dividerH}
+     */
+    public static PagePlan grouped(int total, Sections sections, int viewport,
+                                   int headerH, int itemH, int dividerH) {
         if (total <= 0) {
             return new PagePlan(new int[]{0}, 0);
         }
+        if (dividerH < 0) {
+            dividerH = 0;
+        }
         if (sections == null || sections.count() == 0) {
-            int per = itemH > 0 && viewport > 0 ? Math.max(1, viewport / itemH)
+            int per = itemH > 0 && viewport > 0
+                    ? Math.max(1, (viewport + dividerH) / (itemH + dividerH))
                     : ListMetrics.DEFAULT;
             return flat(total, per);
         }
@@ -61,14 +81,19 @@ public final class PagePlan {
         if (headerH < 0) {
             headerH = 0;
         }
+        // Строка «стоит» свою высоту плюс разделитель; лишний разделитель в конце
+        // компенсируется добавкой dividerH к бюджету.
+        int costH = headerH + dividerH;
+        int costI = itemH + dividerH;
+        int budget = viewport + dividerH;
         IntBag pages = new IntBag(total / itemH + 2);
         int i = 0;
         while (i < total) {
             pages.add(i);
-            int rem = viewport;
+            int rem = budget;
             int si = sections.indexOf(i);
             if (i != sections.start(si)) {
-                rem -= headerH; // повтор заголовка разрезанной группы
+                rem -= costH; // повтор заголовка разрезанной группы
             }
             boolean placed = false;
             while (i < total) {
@@ -77,23 +102,23 @@ public final class PagePlan {
                 if (!placed) {
                     // На странице обязана быть хотя бы одна строка — иначе нет прогресса.
                     if (needHeader) {
-                        rem -= headerH;
+                        rem -= costH;
                     }
-                    rem -= itemH;
+                    rem -= costI;
                     i++;
                     placed = true;
                     continue;
                 }
                 if (needHeader) {
-                    if (rem - headerH < itemH) {
+                    if (rem - costH < costI) {
                         break; // нет места под заголовок + строку
                     }
-                    rem -= headerH;
+                    rem -= costH;
                 }
-                if (rem < itemH) {
+                if (rem < costI) {
                     break;
                 }
-                rem -= itemH;
+                rem -= costI;
                 i++;
             }
         }

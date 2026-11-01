@@ -81,13 +81,12 @@ public final class SearchDao {
     }
 
     private static Cursor like(SQLiteDatabase db, String q, int offset, int limit) {
-        String norm = Text.norm(q);
-        String hay = "'%" + norm.replace("'", "''") + "%'";
+        String hay = likePattern(q);
         String sql = "SELECT " + BookDao.COLS_SQL
                 + " FROM " + Schema.T_BOOK + " b"
-                + " WHERE b.title_norm LIKE " + hay
-                + " OR b.authors_norm LIKE " + hay
-                + " OR b.series_norm LIKE " + hay
+                + " WHERE b.title_norm LIKE " + hay + " ESCAPE '\\'"
+                + " OR b.authors_norm LIKE " + hay + " ESCAPE '\\'"
+                + " OR b.series_norm LIKE " + hay + " ESCAPE '\\'"
                 + " ORDER BY (b.title_letter='" + Text.OTHER + "'), b.title_letter, b.title_norm, b.id"
                 + " LIMIT ? OFFSET ?";
         return db.rawQuery(sql, new String[]{String.valueOf(limit), String.valueOf(offset)});
@@ -120,13 +119,13 @@ public final class SearchDao {
 
     /** {@code COUNT(*)} по LIKE-пути (короткие запросы, подстрока). */
     private static int likeCount(SQLiteDatabase db, String q) {
-        String hay = "'%" + Text.norm(q).replace("'", "''") + "%'";
+        String hay = likePattern(q);
         Cursor c = null;
         try {
             c = db.rawQuery("SELECT COUNT(*) FROM " + Schema.T_BOOK + " b"
-                            + " WHERE b.title_norm LIKE " + hay
-                            + " OR b.authors_norm LIKE " + hay
-                            + " OR b.series_norm LIKE " + hay,
+                            + " WHERE b.title_norm LIKE " + hay + " ESCAPE '\\'"
+                            + " OR b.authors_norm LIKE " + hay + " ESCAPE '\\'"
+                            + " OR b.series_norm LIKE " + hay + " ESCAPE '\\'",
                     null);
             return c.moveToFirst() ? c.getInt(0) : 0;
         } finally {
@@ -134,6 +133,27 @@ public final class SearchDao {
                 c.close();
             }
         }
+    }
+
+    /**
+     * LIKE-шаблон подстроки с экранированием спецсимволов (номер 1 в
+     * {@code BACKLOG.md}): {@code %}, {@code _} и сам {@code \} трактуются
+     * буквально, а не как маски. Одинарная кавычка удваивается (строковый
+     * литерал). Экранирование действует из-за {@code ESCAPE '\'} в запросе.
+     */
+    private static String likePattern(String q) {
+        String norm = Text.norm(q).replace("'", "''");
+        StringBuilder b = new StringBuilder(norm.length() + 4);
+        b.append("'%");
+        for (int i = 0; i < norm.length(); i++) {
+            char c = norm.charAt(i);
+            if (c == '\\' || c == '%' || c == '_') {
+                b.append('\\');
+            }
+            b.append(c);
+        }
+        b.append("%'");
+        return b.toString();
     }
 
     /**

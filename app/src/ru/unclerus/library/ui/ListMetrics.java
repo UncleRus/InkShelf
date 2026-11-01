@@ -39,6 +39,17 @@ public final class ListMetrics {
 
     /** Сколько строк разметки {@code rowLayoutId} помещается в область {@code listHeightPx}. */
     public static int perPage(Context ctx, int listHeightPx, int rowLayoutId) {
+        return perPage(ctx, listHeightPx, rowLayoutId, 0);
+    }
+
+    /**
+     * То же, но с учётом высоты разделителя {@code dividerPx} между строками
+     * (номер 4 в {@code BACKLOG.md}): {@code n} строк занимают
+     * {@code n*row + (n-1)*divider}, поэтому
+     * {@code n = (h + divider) / (row + divider)}. Без этого список вылезал за
+     * область на {@code (n-1)*divider} пикселей.
+     */
+    public static int perPage(Context ctx, int listHeightPx, int rowLayoutId, int dividerPx) {
         if (listHeightPx <= 0) {
             return DEFAULT;
         }
@@ -46,7 +57,10 @@ public final class ListMetrics {
         if (row <= 0) {
             return DEFAULT;
         }
-        int n = listHeightPx / row;
+        if (dividerPx < 0) {
+            dividerPx = 0;
+        }
+        int n = (listHeightPx + dividerPx) / (row + dividerPx);
         if (n < MIN) {
             n = MIN;
         }

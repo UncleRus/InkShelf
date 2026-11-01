@@ -827,17 +827,18 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
 
     /** Построить разбиение на страницы под текущий состав строк. */
     private PagePlan buildPlan() {
+        int divider = mList.getDividerHeight();
         if (searching()) {
             return PagePlan.flat(mSearchTotal,
-                    ListMetrics.perPage(this, mViewport, itemLayout()));
+                    ListMetrics.perPage(this, mViewport, itemLayout(), divider));
         }
         int total = mTabCount[mTab];
         int itemH = ListMetrics.rowHeight(this, itemLayout());
         if (mSections != null) {
             int headerH = ListMetrics.rowHeight(this, R.layout.row_section);
-            return PagePlan.grouped(total, mSections, mViewport, headerH, itemH);
+            return PagePlan.grouped(total, mSections, mViewport, headerH, itemH, divider);
         }
-        int per = ListMetrics.perPage(this, mViewport, itemLayout());
+        int per = ListMetrics.perPage(this, mViewport, itemLayout(), divider);
         return PagePlan.flat(total, per);
     }
 

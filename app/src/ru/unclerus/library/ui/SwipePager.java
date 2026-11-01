@@ -6,10 +6,12 @@ import android.view.View;
 import android.widget.ListView;
 
 /**
- * Листание страниц свайпом (PLAN §6.7, UI.md §5.2): справа налево — вперёд,
- * слева направо — назад (как в обычных читалках). Жест считается горизонтальным,
- * только если {@code |dx| > touchSlop} и {@code |dx| > |dy|} — вертикальная
- * прокрутка списка не перехватывается.
+ * Листание страниц свайпом (PLAN §6.7, UI.md §5.2). Горизонтальный свайп:
+ * справа налево — вперёд, слева направо — назад (как в обычных читалках).
+ * Вертикальный свайп (номер 2 в {@code BACKLOG.md}) листает так же: вверх —
+ * вперёд, вниз — назад. Страница списка подобрана по высоте экрана (см.
+ * {@link ListMetrics}/{@link PagePlan}), поэтому собственная прокрутка списка
+ * не нужна и вертикальный жест безопасно отдать листанию.
  */
 public final class SwipePager {
 
@@ -38,15 +40,26 @@ public final class SwipePager {
                         float dx = e2.getX() - e1.getX();
                         float dy = e2.getY() - e1.getY();
                         float slop = 48f;
-                        if (Math.abs(dx) < slop || Math.abs(dx) <= Math.abs(dy)) {
-                            return false; // вертикальный жест — обычная прокрутка
+                        // Доминирующая ось решает: горизонтальный жест важнее при
+                        // равенстве модулей — так случайный диагональный свайп не
+                        // «уезжает» в листание по вертикали.
+                        if (Math.abs(dx) >= slop && Math.abs(dx) > Math.abs(dy)) {
+                            if (dx > 0) {
+                                target.onSwipeBack();
+                            } else {
+                                target.onSwipeForward();
+                            }
+                            return true;
                         }
-                        if (dx > 0) {
-                            target.onSwipeBack();
-                        } else {
-                            target.onSwipeForward();
+                        if (Math.abs(dy) >= slop && Math.abs(dy) > Math.abs(dx)) {
+                            if (dy < 0) {
+                                target.onSwipeForward(); // вверх — вперёд
+                            } else {
+                                target.onSwipeBack();    // вниз — назад
+                            }
+                            return true;
                         }
-                        return true;
+                        return false;
                     }
                 });
         list.setOnTouchListener(new View.OnTouchListener() {

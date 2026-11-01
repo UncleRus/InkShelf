@@ -38,6 +38,9 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <!-- Корзина: тач-цель @dimen/touch_min (48dp), но значок рисуется в
+         собственный размер иконки (24dp, как ic_folder) — scaleType="center"
+         не растягивает вектор на всю тач-цель (номер 5 в BACKLOG.md). -->
     <ImageView
         android:id="@+id/root_trash"
         android:layout_width="@dimen/touch_min"
@@ -45,6 +48,7 @@
         android:layout_marginLeft="@dimen/space_s"
         android:background="@null"
         android:src="@drawable/ic_trash"
+        android:scaleType="center"
         android:tint="@color/ink"
         android:contentDescription="@string/cd_delete_root" />
 </LinearLayout>

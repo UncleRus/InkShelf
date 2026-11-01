@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import ru.unclerus.library.App;
 import ru.unclerus.library.Logger;
 import ru.unclerus.library.scan.RootRepo;
+import ru.unclerus.library.util.BookFiles;
 
 /**
  * Свой минимальный FileProvider (AndroidX недоступен): отдаёт книги читалкам по
@@ -61,6 +62,11 @@ public final class LibraryFileProvider extends ContentProvider {
         Context ctx = getContext();
         if (ctx == null) {
             return false;
+        }
+        // Материализованные копии SAF-книг (cacheDir/saf/open) — наш кэш,
+        // выданный читалке при открытии SAF-книги (номер 6 в BACKLOG.md).
+        if (BookFiles.isMaterialized(ctx, path)) {
+            return true;
         }
         try {
             for (RootRepo.Root r : RootRepo.listAll(App.db().getReadableDatabase())) {

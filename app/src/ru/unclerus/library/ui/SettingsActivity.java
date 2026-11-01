@@ -72,8 +72,8 @@ public final class SettingsActivity extends ThemedActivity {
 
     /** Варианты размера шрифта (S4.3), множитель поверх системного. */
     private static final float[] FONT_SCALES = {1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
-    /** Варианты размера кэша обложек, МБ (S4.7). */
-    private static final int[] CACHE_MB = {16, 32, 64, 128};
+    /** Варианты размера кэша обложек, МБ (S4.7) — единый список в {@link Prefs}. */
+    private static final int[] CACHE_MB = Prefs.COVER_CACHE_MB;
 
     private LinearLayout mList;
     private LayoutInflater mInf;
