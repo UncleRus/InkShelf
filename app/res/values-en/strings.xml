@@ -155,6 +155,8 @@
     <string name="setting_file_access">File access</string>
     <string name="setting_font_size">Font size</string>
     <string name="setting_list_density">List density</string>
+    <string name="setting_remember_page">Remember open page</string>
+    <string name="setting_remember_page_sub">After a restart each tab opens on its last page</string>
     <string name="setting_rescan">Rescan library</string>
     <string name="setting_roots">Book folders</string>
     <string name="setting_show_covers">Show covers</string>

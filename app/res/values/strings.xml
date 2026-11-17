@@ -155,6 +155,8 @@
     <string name="setting_file_access">Доступ к файлам</string>
     <string name="setting_font_size">Размер шрифта</string>
     <string name="setting_list_density">Плотность списка</string>
+    <string name="setting_remember_page">Запоминать открытую страницу</string>
+    <string name="setting_remember_page_sub">После перезапуска каждая вкладка откроется на своей последней странице</string>
     <string name="setting_rescan">Пересканировать библиотеку</string>
     <string name="setting_roots">Папки с книгами</string>
     <string name="setting_show_covers">Показывать обложки</string>

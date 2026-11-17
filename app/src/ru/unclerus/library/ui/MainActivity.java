@@ -131,7 +131,9 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     /**
      * Последняя страница каждой вкладки (BACKLOG №14): переключение вкладок не
      * должно сбрасывать позицию списка. Запоминается только в режиме вкладки —
-     * страницы поиска (он один на все вкладки) здесь не пишутся.
+     * страницы поиска (он один на все вкладки) здесь не пишутся. При включённой
+     * настройке S4.8 те же значения пишутся в {@link Prefs} и переживают
+     * перезапуск ({@link #onCreate}).
      */
     private final int[] mPageByTab = new int[TAB_LABELS.length];
     private int mAction = ACTION_NONE;
@@ -170,6 +172,20 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         if (savedTab >= 0 && savedTab < TAB_LABELS.length) {
             mTab = savedTab;
         }
+
+        // Страницы вкладок между запусками (S4.8, BACKLOG №15): читаем, только
+        // если настройка включена — иначе помним их в рамках этой сессии (№14).
+        if (App.prefs().rememberPage()) {
+            for (int i = 0; i < mPageByTab.length; i++) {
+                int savedPage = App.prefs().tabPage(i);
+                if (savedPage > 1) {
+                    mPageByTab[i] = savedPage;
+                }
+            }
+        }
+        // Стартовая страница — запомненная для восстановленной вкладки (№14/№15),
+        // иначе первая; renderPage.clamp подрежет её под актуальный число страниц.
+        mPage = rememberedPage(mTab);
 
         mTabs = findViewById(R.id.tabs);
         mTabBar = findViewById(R.id.tab_bar);
@@ -669,12 +685,18 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     /**
      * Перейти на страницу {@code page} и запомнить её за текущей вкладкой
      * (BACKLOG №14). В режиме поиска не запоминаем: {@link #mPage} тогда
-     * относится к результатам поиска, а не к списку вкладки.
+     * относится к результатам поиска, а не к списку вкладки. При включённой
+     * настройке S4.8 то же значение уходит в {@link Prefs} и переживает
+     * перезапуск (BACKLOG №15).
      */
     private void setPage(int page) {
         mPage = page;
-        if (!searching()) {
-            mPageByTab[mTab] = page;
+        if (searching()) {
+            return;
+        }
+        mPageByTab[mTab] = page;
+        if (App.prefs().rememberPage()) {
+            App.prefs().setTabPage(mTab, page);
         }
     }
 

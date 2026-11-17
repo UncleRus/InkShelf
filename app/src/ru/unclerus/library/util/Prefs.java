@@ -23,6 +23,10 @@ public final class Prefs {
     public static final String K_SCHEMA_SEEN = "schema_seen";      // int
     /** Последняя открытая вкладка главного экрана (S1); -1 — ещё не запоминалась. */
     public static final String K_TAB = "main_tab";                 // int
+    /** Запоминать открытую страницу вкладки между перезапусками (S4.8). */
+    public static final String K_REMEMBER_PAGE = "remember_page";  // boolean
+    /** Страницы вкладок S1 между запусками: CSV int по индексу вкладки (S4.8). */
+    public static final String K_TAB_PAGES = "main_tab_pages";     // String "3,1,5,..."
     // Контексты режима сортировки (значение — BookDao.SORT_*):
     public static final String K_SORT_BOOKS = "sort_all_books";    // S1.6 «Все книги»
     public static final String K_SORT_GENRE = "sort_genre";        // S2, книги жанра
@@ -158,5 +162,75 @@ public final class Prefs {
 
     public void setTab(int idx) {
         mSp.edit().putInt(K_TAB, idx).apply();
+    }
+
+    // --- страницы вкладок между перезапусками (S4.8) ---
+    /**
+     * Сохранять ли открытую страницу каждой вкладки между запусками (настройка
+     * S4.8). По умолчанию включено: позиция списка помнится и в рамках сессии
+     * (BACKLOG №14), и между перезапусками (№15); выключение оставляет память
+     * сессии и очищает сохранённые страницы.
+     */
+    public boolean rememberPage() {
+        return mSp.getBoolean(K_REMEMBER_PAGE, true);
+    }
+
+    public void setRememberPage(boolean v) {
+        mSp.edit().putBoolean(K_REMEMBER_PAGE, v).apply();
+    }
+
+    /** Сохранённая страница вкладки {@code idx}; 0 — вкладка ещё не запоминалась. */
+    public int tabPage(int idx) {
+        if (idx < 0) {
+            return 0;
+        }
+        String[] parts = pageParts();
+        if (idx >= parts.length) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(parts[idx]);
+        } catch (NumberFormatException e) {
+            return 0; // испорченное значение читаем как «не запоминалось»
+        }
+    }
+
+    /** Записать страницу {@code page} (0 — «не листали») для вкладки {@code idx}. */
+    public void setTabPage(int idx, int page) {
+        if (idx < 0) {
+            return;
+        }
+        String[] parts = pageParts();
+        if (idx >= parts.length) {
+            String[] grown = new String[idx + 1];
+            System.arraycopy(parts, 0, grown, 0, parts.length);
+            for (int i = parts.length; i <= idx; i++) {
+                grown[i] = "0";
+            }
+            parts = grown;
+        }
+        parts[idx] = String.valueOf(Math.max(0, page));
+        StringBuilder sb = new StringBuilder();
+        for (String p : parts) {
+            if (sb.length() > 0) {
+                sb.append(',');
+            }
+            sb.append(p);
+        }
+        mSp.edit().putString(K_TAB_PAGES, sb.toString()).apply();
+    }
+
+    /** Забыть сохранённые страницы — при выключении настройки S4.8. */
+    public void clearTabPages() {
+        mSp.edit().remove(K_TAB_PAGES).apply();
+    }
+
+    /** Разобранный CSV страниц; пустое значение — пустой список. */
+    private String[] pageParts() {
+        String raw = mSp.getString(K_TAB_PAGES, "");
+        if (raw == null || raw.isEmpty()) {
+            return new String[0];
+        }
+        return raw.split(",");
     }
 }
