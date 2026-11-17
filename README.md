@@ -51,6 +51,23 @@ ANDROID_TOOLS=/path/to/tools bash build.sh   # → Library.apk
 Скрипт выполняет цепочку `aapt2 compile → aapt2 link → javac → d8 → zipalign →
 apksigner` и в конце печатает сертификат подписи. Промежуточные файлы — в `build/`.
 
+### Версия
+Версия задаётся в ОДНОМ месте — файл `VERSION` в корне (`name=` — что видит
+человек, `code=` — целое для обновлений):
+
+```
+name=0.1.2
+code=3
+```
+
+Оттуда `build.sh` берёт её для `aapt2 link --version-name/--version-code` (то
+есть для APK), для имени релизного артефакта `dist/InkShelf-<name>-<code>.apk`
+(и его `.sha256`), а `design/gen.py` — для макетов S6 «Диагностика» и S7 «О
+программе». В `app/AndroidManifest.xml` версии нет намеренно; само приложение
+показывает то, что влито в APK (`PackageInfo`). Бамп релиза = правка `VERSION`
+(плюс, если нужно, `python3 design/gen.py && bash design/render.sh` для PNG
+макетов).
+
 ### Подпись и обновления
 Ключ `signing/library.keystore` и пароль к нему (`signing/keystore.pass`) в
 репозиторий не входят. Если ключа нет, `build.sh` сгенерирует новый ключ и

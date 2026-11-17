@@ -4,11 +4,12 @@
   Без Gradle, без AndroidX: только платформенные API (minSdk 23, targetSdk 30).
   Доступ к файлам — MANAGE_EXTERNAL_STORAGE («все файлы»).
   Провайдер файлов — свой (androidx FileProvider недоступен без AndroidX).
+
+  Версии (versionName/versionCode) здесь нет намеренно: единственный источник —
+  файл VERSION в корне проекта, build.sh вливает его в APK через aapt2 link.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.unclerus.library"
-    android:versionCode="3"
-    android:versionName="0.1.2">
+    package="ru.unclerus.library">
 
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="30" />
 

@@ -16,6 +16,24 @@ KS="${LIB_KS:-$ROOT/signing/library.keystore}"
 OUT="$ROOT/build"
 DIST="$ROOT/Library.apk"
 
+# Версия живёт в одном месте — файл VERSION в корне. Отсюда она уходит в APK
+# (aapt2 link ниже), в имя артефакта dist/ и в макеты (design/gen.py читает тот
+# же файл). В AndroidManifest.xml версии нет намеренно.
+VERSION_FILE="$ROOT/VERSION"
+[ -f "$VERSION_FILE" ] || { echo "не найден файл версии: $VERSION_FILE" >&2; exit 1; }
+VNAME=""
+VCODE=""
+while IFS='=' read -r key val; do
+    case "$key" in
+        name) VNAME="$(printf '%s' "$val" | tr -d '[:space:]')" ;;
+        code) VCODE="$(printf '%s' "$val" | tr -d '[:space:]')" ;;
+    esac
+done < "$VERSION_FILE"
+{ [ -n "$VNAME" ] && [ -n "$VCODE" ]; } || {
+    echo "в $VERSION_FILE нужны строки name= и code=" >&2
+    exit 1
+}
+
 MIN_SDK=23
 TARGET_SDK=30
 ALIAS="${LIB_KS_ALIAS:-library}"
@@ -66,6 +84,8 @@ mkdir -p "$OUT/gen" "$OUT/classes"
     --java "$OUT/gen" \
     --min-sdk-version "$MIN_SDK" \
     --target-sdk-version "$TARGET_SDK" \
+    --version-code "$VCODE" \
+    --version-name "$VNAME" \
     "$OUT/res.zip"
 
 find "$APP/src" "$OUT/gen" -name '*.java' -print | sort > "$OUT/sources.txt"
@@ -87,5 +107,13 @@ cp "$OUT/app-unsigned.apk" "$OUT/app-with-dex.apk"
     --out "$DIST" \
     "$OUT/app-aligned.apk"
 
+# Релизный артефакт: копия с именем из VERSION и контрольной суммой — чтобы при
+# выпуске не переименовывать вручную (dist/ в .gitignore).
+RELEASE_APK="$ROOT/dist/InkShelf-$VNAME-$VCODE.apk"
+mkdir -p "$ROOT/dist"
+cp "$DIST" "$RELEASE_APK"
+( cd "$ROOT/dist" && sha256sum "$(basename "$RELEASE_APK")" > "$(basename "$RELEASE_APK").sha256" )
+
 "$BT/apksigner" verify --print-certs "$DIST" | head -n 4
-ls -lh "$DIST"
+echo "версия $VNAME ($VCODE)"
+ls -lh "$DIST" "$RELEASE_APK"
