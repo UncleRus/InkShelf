@@ -271,6 +271,11 @@ S_ = {
     'author_last':     ('author_format_last_first', 'Фамилия Имя', 'Last First'),
     'set_covers':      ('setting_show_covers', 'Показывать обложки', 'Show covers'),
     'set_cache':       ('setting_cover_cache', 'Размер кэша обложек', 'Cover cache size'),
+    'set_remember_page': ('setting_remember_page', 'Запоминать открытую страницу',
+                          'Remember open page'),
+    'remember_page_sub': ('setting_remember_page_sub',
+                          'После перезапуска каждая вкладка откроется на своей последней странице',
+                          'After a restart each tab opens on its last page'),
     'set_access':      ('setting_file_access', 'Доступ к файлам', 'File access'),
     'access_granted':  ('access_granted', 'Разрешён', 'Granted'),
     'access_denied':   ('access_denied', 'Не разрешён', 'Not granted'),
@@ -803,13 +808,14 @@ def letter_head(ch):
     return '<div class="letter">%s</div>' % esc(ch)
 
 
-def setting(ico, title, value='', chev=True):
-    """Строка настройки: иконка + название + текущее значение + шеврон."""
+def setting(ico, title, value='', chev=True, sub=None):
+    """Строка настройки: иконка + название (+ подстрока) + текущее значение + шеврон."""
     lead = '<div class="lead">%s</div>' % svg_icon(ico, dp(20), C['icon'])
     v = ('<div class="name" style="color:#777;font-size:24px">%s</div>' % esc(value)) if value else ''
     c = CHEV if chev else ''
-    return ('<div class="row">%s<div class="grow"><div class="name">%s</div></div>%s%s</div>'
-            % (lead, esc(title), v, c))
+    subh = '<div class="sub">%s</div>' % esc(sub) if sub else ''
+    return ('<div class="row">%s<div class="grow"><div class="name">%s</div>%s</div>%s%s</div>'
+            % (lead, esc(title), subh, v, c))
 
 
 def banner(text, warn=False, chev=False):
@@ -1244,6 +1250,8 @@ def s12_settings():
             setting('authors', tr('set_author_fmt'), tr('author_first')) +
             setting('image', tr('set_covers'), tr('yes')) +
             setting('database', tr('set_cache'), '64 МБ' if LANG == 'ru' else '64 MB') +
+            setting('history', tr('set_remember_page'), tr('yes'),
+                    sub=tr('remember_page_sub')) +
             sect(tr('sec_system')) +
             setting('key', tr('set_access'), tr('access_granted')) +
             setting('activity', tr('set_diagnostics')) +
@@ -1281,7 +1289,7 @@ def s14_diagnostics():
             blk('info', tr('blk_device')) +
             kv(tr('k_model'), 'ONYX BOOX RAPHAEL2') +
             kv(tr('k_android'), '11 (API 30)') +
-            kv(tr('k_app_version'), '0.1.1 (2)') + '</div>' +
+            kv(tr('k_app_version'), '0.1.2 (3)') + '</div>' +
             blk('database', tr('blk_index')) +
             kv(tr('k_total_books'), num(677)) +
             kv(tr('k_agr'), '%s / %s / %s' % (num(312), num(69), num(96))) +
@@ -1309,7 +1317,7 @@ def s15_about():
             '<div style="%s;font-weight:700">%s</div>' % (t('xl'), esc(tr('app_name'))) +
             '<div style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(6), esc(tr('app_tagline'))) +
-            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), '0.1.1'))) +
+            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), '0.1.2'))) +
             '<div class="msg" style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(24), esc(tr('about_text'))) +
             '<div class="msg" style="%s;color:#777;margin-top:%dpx">%s</div>'

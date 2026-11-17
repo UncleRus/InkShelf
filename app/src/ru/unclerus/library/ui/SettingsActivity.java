@@ -44,9 +44,9 @@ import ru.unclerus.library.util.Prefs;
  *   <li>S4.1 «Папки с книгами» — открывает отдельный экран S9 ({@link RootsActivity});</li>
  *   <li>S4.2 читалка по умолчанию — список читалок ({@link OpenWithDialog});</li>
  *   <li>S4.3 размер шрифта, S4.4 плотность, S4.5 формат имени автора, S4.6 обложки,
- *       S4.7 размер кэша — мгновенные настройки;</li>
- *   <li>S4.8 рескан, S4.9 очистка отсутствующих, S4.10 доступ к файлам,
- *       S4.11 диагностика, S4.12 «О программе».</li>
+ *       S4.7 размер кэша, S4.8 запоминание открытой страницы — мгновенные настройки;</li>
+ *   <li>S4.9 рескан, S4.10 очистка отсутствующих, S4.11 доступ к файлам,
+ *       S4.12 диагностика, S4.13 «О программе».</li>
  * </ul>
  *
  * <p>Масштаб шрифта применяется базовым {@link ThemedActivity}: при смене экран
@@ -66,6 +66,7 @@ public final class SettingsActivity extends ThemedActivity {
     private static final int A_CACHE = 10;
     private static final int A_DIAGNOSTICS = 11;
     private static final int A_ABOUT = 12;
+    private static final int A_REMEMBER_PAGE = 13;
 
     private static final int REQ_STORAGE = 1;
     private static final int REQ_SAF_TREE = 2;
@@ -145,6 +146,10 @@ public final class SettingsActivity extends ThemedActivity {
         addRow(R.drawable.ic_database, getString(R.string.setting_cover_cache), null,
                 getString(R.string.value_mb, String.valueOf(App.prefs().coverCacheMb())),
                 A_CACHE);
+        addRow(R.drawable.ic_history, getString(R.string.setting_remember_page),
+                getString(R.string.setting_remember_page_sub),
+                getString(App.prefs().rememberPage() ? R.string.value_yes : R.string.value_no),
+                A_REMEMBER_PAGE);
 
         addSection(R.string.section_access_service);
         addRow(R.drawable.ic_key, getString(R.string.setting_file_access), null,
@@ -237,6 +242,9 @@ public final class SettingsActivity extends ThemedActivity {
             case A_CACHE:
                 showCacheDialog();
                 break;
+            case A_REMEMBER_PAGE:
+                showRememberPageDialog();
+                break;
             case A_ACCESS:
                 if (FileAccess.hasAllFiles(this)) {
                     Toast.makeText(this, R.string.access_granted, Toast.LENGTH_SHORT).show();
@@ -255,7 +263,7 @@ public final class SettingsActivity extends ThemedActivity {
         }
     }
 
-    /** S4.8: запустить общий рескан и вернуться в список — прогресс покажет S1. */
+    /** S4.9: запустить общий рескан и вернуться в список — прогресс покажет S1. */
     private void startScan() {
         startService(new Intent(this, IndexerService.class).setAction(IndexerService.ACTION_START));
         Toast.makeText(this, R.string.toast_scan_started, Toast.LENGTH_SHORT).show();
@@ -263,7 +271,7 @@ public final class SettingsActivity extends ThemedActivity {
     }
 
     /**
-     * S4.9 «Очистить отсутствующие» (D4): показать, что именно будет удалено,
+     * S4.10 «Очистить отсутствующие» (D4): показать, что именно будет удалено,
      * и по подтверждению удалить книги с пропавшими файлами и «сиротские»
      * классификаторы. Файлы на диске не трогаются.
      */
@@ -455,6 +463,33 @@ public final class SettingsActivity extends ThemedActivity {
                 }));
     }
 
+    /**
+     * S4.8: запоминать ли открытую страницу вкладок между перезапусками
+     * (BACKLOG №15). При выключении сохранённые страницы выбрасываются —
+     * память остаётся только в рамках текущей сессии (№14).
+     */
+    private void showRememberPageDialog() {
+        final String[] items = {
+                getString(R.string.value_yes),
+                getString(R.string.value_no),
+        };
+        int checked = App.prefs().rememberPage() ? 0 : 1;
+        Dialogs.show(new AlertDialog.Builder(this, R.style.AppTheme_Dialog)
+                .setTitle(R.string.setting_remember_page)
+                .setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        boolean on = which == 0;
+                        App.prefs().setRememberPage(on);
+                        if (!on) {
+                            App.prefs().clearTabPages();
+                        }
+                        d.dismiss();
+                        buildRows();
+                    }
+                }));
+    }
+
     /** S4.7: размер дискового кэша обложек; после смены LRU подрезается. */
     private void showCacheDialog() {
         final String[] items = new String[CACHE_MB.length];
@@ -527,7 +562,7 @@ public final class SettingsActivity extends ThemedActivity {
     }
 
     // ------------------------------------------------------------------
-    // Доступ к файлам (S4.10)
+    // Доступ к файлам (S4.11)
     // ------------------------------------------------------------------
 
     private boolean hasAllFiles() {
@@ -538,7 +573,7 @@ public final class SettingsActivity extends ThemedActivity {
         FileAccess.requestManage(this, REQ_STORAGE);
     }
 
-    /** D2 «Доступ к файлам» (тап по строке S4.10). */
+    /** D2 «Доступ к файлам» (тап по строке S4.11). */
     private void showAccessDialog() {
         AccessPrompt.show(this, new AccessPrompt.Actions() {
             @Override
