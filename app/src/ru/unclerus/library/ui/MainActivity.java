@@ -128,6 +128,12 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
     /** Активная вкладка; по умолчанию «Авторы» (первый запуск или нет запомненной). */
     private int mTab = TAB_AUTHORS;
     private int mPage = 1;
+    /**
+     * Последняя страница каждой вкладки (BACKLOG №14): переключение вкладок не
+     * должно сбрасывать позицию списка. Запоминается только в режиме вкладки —
+     * страницы поиска (он один на все вкладки) здесь не пишутся.
+     */
+    private final int[] mPageByTab = new int[TAB_LABELS.length];
     private int mAction = ACTION_NONE;
 
     /** Запрос поиска; пустая строка — режим вкладки (не поиска). */
@@ -655,6 +661,23 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         updateTabArrows();
     }
 
+    /** Запомненная страница вкладки: она, или первая, если вкладку ещё не листали. */
+    private int rememberedPage(int idx) {
+        return mPageByTab[idx] > 0 ? mPageByTab[idx] : 1;
+    }
+
+    /**
+     * Перейти на страницу {@code page} и запомнить её за текущей вкладкой
+     * (BACKLOG №14). В режиме поиска не запоминаем: {@link #mPage} тогда
+     * относится к результатам поиска, а не к списку вкладки.
+     */
+    private void setPage(int page) {
+        mPage = page;
+        if (!searching()) {
+            mPageByTab[mTab] = page;
+        }
+    }
+
     private void showTab(int idx) {
         boolean wasSearch = searching();
         if (idx == mTab && !wasSearch) {
@@ -671,7 +694,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
             mSearchFooter.setVisibility(View.GONE);
         }
         mTab = idx;
-        mPage = 1;
+        mPage = rememberedPage(idx);
         mSections = null;
         mPlan = null;
         App.prefs().setTab(idx); // помним активную вкладку между запусками
@@ -695,7 +718,9 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         }
         boolean transition = mQuery.isEmpty() != q.isEmpty();
         mQuery = q;
-        mPage = 1;
+        // Поиск — отдельный список: его страницы не пишутся в память вкладок
+        // (setPage), а выход из поиска возвращает вкладке её страницу (№14).
+        setPage(q.isEmpty() ? rememberedPage(mTab) : 1);
         mPlan = null;
         if (transition) {
             mSections = null; // состав строк меняется полностью
@@ -764,7 +789,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
                     public void onClick(DialogInterface d, int which) {
                         mSort = values[which];
                         App.prefs().setSort(Prefs.K_SORT_BOOKS, mSort);
-                        mPage = 1;
+                        setPage(1); // состав страниц изменился — прежняя страница невалидна
                         mSections = null;
                         mPlan = null;
                         d.dismiss();
@@ -785,7 +810,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         if (page > pages) {
             page = pages;
         }
-        mPage = page;
+        setPage(page);
         renderPage();
     }
 
@@ -817,14 +842,15 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
             toast(R.string.toast_last_page);
             return;
         }
-        mPage = target;
+        setPage(target);
         renderPage();
     }
 
     /**
      * Горизонтальный свайп — соседняя вкладка (BACKLOG №12): тот же полный
-     * путь, что тап по вкладке (выход из поиска, сброс страницы, память
-     * вкладки в {@code Prefs}). Циклически: от последней к первой и обратно.
+     * путь, что тап по вкладке (выход из поиска, память вкладки в
+     * {@code Prefs}, возврат к её запомненной странице — №14).
+     * Циклически: от последней к первой и обратно.
      */
     private void swipeTab(int delta) {
         int n = TAB_LABELS.length;
@@ -886,10 +912,10 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         }
         int pages = mPlan.pageCount();
         if (mPage < 1) {
-            mPage = 1;
+            setPage(1);
         }
         if (mPage > pages) {
-            mPage = pages;
+            setPage(pages); // страниц стало меньше (изменились данные) — граница
         }
         int start = mPlan.start(mPage - 1);
         int end = mPlan.end(mPage - 1);
@@ -1011,7 +1037,7 @@ public final class MainActivity extends ThemedActivity implements ProgressBus.Li
         if (mSections == null || mPlan == null) {
             return;
         }
-        mPage = mPlan.pageOf(mSections.start(section)) + 1;
+        setPage(mPlan.pageOf(mSections.start(section)) + 1);
         renderPage();
     }
 
