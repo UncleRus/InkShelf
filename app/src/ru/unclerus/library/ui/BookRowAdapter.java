@@ -11,10 +11,12 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import ru.unclerus.library.App;
@@ -46,6 +48,14 @@ public final class BookRowAdapter extends BaseAdapter {
     private final boolean mShowCovers;
     /** Дёргается по готовности миниатюры — перерисовывает окно строк. */
     private final Runnable mCoverListener;
+    /** Собственно перевязка; ставится в очередь списка (см. {@link #repaintCovers()}). */
+    private final Runnable mRepaint;
+    /**
+     * Список, который вяжет эти строки ({@code parent} из {@link #getView}) —
+     * нужен, чтобы по готовности обложки принудительно сбросить уже разложенные
+     * дети (см. {@link #repaintCovers()}).
+     */
+    private WeakReference<AbsListView> mListRef;
 
     public BookRowAdapter(Context ctx, Cursor cursor) {
         this(ctx, cursor, null, null);
@@ -63,7 +73,7 @@ public final class BookRowAdapter extends BaseAdapter {
         mQuery = query;
         mShowCovers = App.prefs() == null || App.prefs().showCovers();
         mLayout = rowLayout(ctx);
-        mCoverListener = new Runnable() {
+        mRepaint = new Runnable() {
             @Override
             public void run() {
                 try {
@@ -71,8 +81,43 @@ public final class BookRowAdapter extends BaseAdapter {
                 } catch (Throwable ignored) {
                     // окно могло быть уже снято — перерисовывать нечего
                 }
+                AbsListView list = mListRef != null ? mListRef.get() : null;
+                if (list != null) {
+                    list.invalidateViews();
+                }
             }
         };
+        mCoverListener = new Runnable() {
+            @Override
+            public void run() {
+                repaintCovers();
+            }
+        };
+    }
+
+    /**
+     * Перерисовка строк по готовности миниатюры. Одного
+     * {@code notifyDataSetChanged()} на e-ink недостаточно: уведомление часто
+     * прилетает, когда {@code ListView} уже внутри собственной раскладки, и
+     * {@code AdapterView} в этом состоянии отбрасывает {@code requestLayout()}
+     * (флаги {@code mInLayout}/{@code mBlockLayoutRequests}) — разложенные строки
+     * остаются с плейсхолдерами до любой следующей перерисовки экрана (открытие
+     * книги, поворот). Поэтому список сбрасывается принудительно:
+     * {@code invalidateViews()} снимает детей и заказывает раскладку сам.
+     *
+     * <p>Перевязка откладывается на ближайший проход цикла сообщений, а не
+     * выполняется сразу: страница с несколькими не прогретыми обложками
+     * грузится пачкой, а на e-ink каждый лишний layout — это лишнее обновление
+     * экрана (NFR-2). Здесь они схлопываются в одно.
+     */
+    private void repaintCovers() {
+        AbsListView list = mListRef != null ? mListRef.get() : null;
+        if (list == null) {
+            notifyDataSetChanged();
+            return;
+        }
+        list.removeCallbacks(mRepaint);
+        list.post(mRepaint);
     }
 
     /**
@@ -140,6 +185,12 @@ public final class BookRowAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (parent instanceof AbsListView
+                && (mListRef == null || mListRef.get() != parent)) {
+            // ссылка слабая: список переживает адаптер (и наоборот), а держать
+            // его ради перевязки обложек сильнее, чем нужно, незачем
+            mListRef = new WeakReference<>((AbsListView) parent);
+        }
         if (isHeader(position)) {
             TextView head = (TextView) convertView;
             if (head == null) {

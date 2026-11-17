@@ -27,6 +27,27 @@ import zlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 APP = os.path.join(HERE, os.pardir, 'app')
 
+
+def _version():
+    """Версия из VERSION в корне проекта — единственный источник (её оттуда же
+    берёт build.sh и вливает в APK). Макеты не должны жить своей жизнью."""
+    name, code = '0.0.0', 0
+    try:
+        with open(os.path.join(HERE, os.pardir, 'VERSION'), encoding='utf-8') as f:
+            for line in f:
+                key, _, val = line.partition('=')
+                key, val = key.strip(), val.strip()
+                if key == 'name':
+                    name = val
+                elif key == 'code':
+                    code = int(val)
+    except (OSError, ValueError):
+        pass
+    return name, code
+
+
+APP_VERSION, APP_CODE = _version()
+
 LANGS = ('ru', 'en')
 LANG = 'ru'        # текущий язык при сборке экранов (меняется в main)
 
@@ -1289,7 +1310,7 @@ def s14_diagnostics():
             blk('info', tr('blk_device')) +
             kv(tr('k_model'), 'ONYX BOOX RAPHAEL2') +
             kv(tr('k_android'), '11 (API 30)') +
-            kv(tr('k_app_version'), '0.1.2 (3)') + '</div>' +
+            kv(tr('k_app_version'), '%s (%d)' % (APP_VERSION, APP_CODE)) + '</div>' +
             blk('database', tr('blk_index')) +
             kv(tr('k_total_books'), num(677)) +
             kv(tr('k_agr'), '%s / %s / %s' % (num(312), num(69), num(96))) +
@@ -1317,7 +1338,7 @@ def s15_about():
             '<div style="%s;font-weight:700">%s</div>' % (t('xl'), esc(tr('app_name'))) +
             '<div style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(6), esc(tr('app_tagline'))) +
-            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), '0.1.2'))) +
+            '<div style="%s;color:#777">%s</div>' % (t('body'), esc(fmt(tr('about_version'), APP_VERSION))) +
             '<div class="msg" style="%s;color:#444;margin-top:%dpx">%s</div>'
             % (t('body'), dp(24), esc(tr('about_text'))) +
             '<div class="msg" style="%s;color:#777;margin-top:%dpx">%s</div>'
